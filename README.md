@@ -1,4 +1,4 @@
-# tv.admin
+# ats.ws
  
 Image: aetherit/ats.ws
 
