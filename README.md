@@ -1,6 +1,6 @@
 # tv.admin
  
-Image: aetherit/tv.admin
+Image: aetherit/ats.ws
 
 Tags:
 - 0.0.1
@@ -13,13 +13,13 @@ Prepare Library
 
 Usage:
 `docker run -d --name upay.ps
-  -p 8080:8080
+  -p 8090:8090
   -p 8888:8888
   -e TZ=Asia/Seoul
-  -e DB_URL=jdbc:mariadb://{개발머신의 아이피(127.0.0.1은 안됨)}:3306/upay?serverTimezone=Asia/Seoul
+  -e DB_URL=jdbc:mariadb://{개발머신의 아이피(127.0.0.1은 안됨)}:3306/ats?serverTimezone=Asia/Seoul
   -e DB_USERNAME=aetherit
   -e DB_PASSWORD=dnflRlfl
-  aetherit/upay.ps:development`
+  aetherit/ats.ws:development`
   
 DB Usage:
 `docker run -d --name upay.db
