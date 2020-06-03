@@ -1,0 +1,63 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.aetherit.ats.ws.repository.mapper.AdvertisingMapper">
+
+    <resultMap id="advertisingResultMap" type="ATSAdvertisiong">
+        <id property="id"                       	column="ad_id" />
+        <result property="adName"             		column="ad_name" />
+        <result property="adShowTime"             	column="ad_show_time" />
+        <result property="adSkipTime"               column="ad_skip_time" />
+        <result property="adWeight"                 column="ad_weight" />
+        <result property="channelType"              column="channel_type" />
+        
+<!--         <result property="equiCls"                	column="" /> -->
+<!--         <result property="equiClsCn"                column="" /> -->
+<!--         <result property="gameType"                 column="" /> -->
+<!--         <result property="iconUrl"                	column="" /> -->
+        
+        <result property="typeId"                	column="type_id" />
+        <result property="linkAddr"                	column="link_addr" />
+        <result property="linkType"                	column="link_type" />
+        <result property="linkTypeCn"               column="link_type_cn" />
+        <result property="moduleId"                	column="module_id" />
+        
+<!--         <result property="picUrl"                	column="" /> -->
+<!--         <result property="programId"                column="" /> -->
+<!--         <result property="secretKey"                column="" /> -->
+        
+        <result property="showLocation"             column="show_location" />
+        <result property="showLocationCn"           column="show_location_cn" />
+        
+        <result property="showOrder"                column="show_order" />
+        <result property="state"                	column="status" />
+        <result property="thumbnail"                column="thumbnail" />
+        
+    </resultMap>
+    
+
+    <select id="selectAdsList" parameterType="int" resultMap="advertisingResultMap">
+        SELECT  base.ad_id,
+				base.ad_name,
+				base.ad_show_time,
+				base.ad_skip_time,
+				base.ad_weight,
+				base.channel_type,
+				base.link_type,
+				FNC_LANG_CHANGE('advertising_bas','link_type',image.lang_cd) link_type_cn,
+				base.module_id,
+				base.status,
+				base.show_order,
+				image.type_id,
+				image.thumbnail,
+				image.link_addr,
+				rel.show_location,
+				FNC_LANG_CHANGE('advertising_show_rel','show_location',image.lang_cd) show_location_cn
+		FROM 	advertising_bas base,
+			  	advertising_image image,
+			  	advertising_show_rel rel
+		WHERE 	show_location = #{location}
+		AND		base.ad_id = image.ad_id
+		AND   	base.ad_id = rel.ad_id
+    </select>
+    
+    
+</mapper>

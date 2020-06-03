@@ -1,0 +1,105 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.aetherit.ats.ws.repository.mapper.UserMapper">
+    <resultMap id="userResultMap" type="ATSUser">
+        <id property="userId"                       column="user_id" />
+        <result property="phoneNo"             		column="phone_no" />
+        <result property="password"             	column="pwd" />
+        <result property="userName"                 column="user_name" />
+        <result property="type"                 	column="user_type" />
+        <result property="regDt"      				column="reg_dt" />
+        <result property="modDt"      				column="mod_dt" />
+    </resultMap>
+
+    <select id="selectUser" parameterType="String" resultMap="userResultMap">
+        SELECT user_id,
+        	   phone_no,
+               pwd,
+               user_name,
+               user_type,
+               reg_dt,
+               mod_dt
+        FROM   user_bas
+        WHERE  user_id = #{userId}
+    </select>
+    
+    
+    <select id="selectUserByPhoneNo" parameterType="String" resultMap="userResultMap">
+        SELECT user_id,
+        	   phone_no,
+               pwd,
+               user_name,
+               user_type,
+               reg_dt,
+               mod_dt
+        FROM   user_bas
+        WHERE  phone_no = #{phoneNo}
+    </select>
+    
+
+    <select id="selectUsersWhereType" parameterType="ATSUserType" resultMap="userResultMap">
+        SELECT user_id,
+        	   phone_no,
+               pwd,
+               user_name,
+               user_type,
+               reg_dt,
+               mod_dt
+        FROM   user_bas
+        WHERE  user_type = #{type}
+        ORDER BY reg_dt DESC
+    </select>
+    
+    
+    <select id="selectUserList" resultMap="userResultMap">
+        SELECT user_id,
+        	   phone_no,
+               pwd,
+               user_name,
+               user_type,
+               reg_dt,
+               mod_dt
+        FROM   user_bas
+        WHERE  user_type = #{type}
+        ORDER BY reg_dt DESC
+        <if test="rowsPerPage!=null and rowsPerPage!=0">
+		LIMIT  #{rowsPerPage} 
+		</if>
+		<if test="page!=null and page!=0">
+        OFFSET #{page}
+		</if>
+    </select>
+    
+    
+    <select id="selectUserTotalCount" resultType="int">
+        SELECT COUNT(1)
+        FROM   user_bas
+        WHERE  user_type = #{type}
+        ORDER BY reg_dt DESC
+    </select>
+    
+    
+
+    <insert id="insertUser" parameterType="ATSUser" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO user_bas 
+        (
+        	user_id,
+       	    phone_no,
+            pwd,
+            user_name,
+            user_type,
+            reg_dt,
+            mod_dt
+        )
+        VALUES 
+        (
+            #{userId},
+            #{phoneNo},
+            #{password},
+            #{userName},
+            #{type},
+            NOW(),
+            NOW()
+        )
+    </insert>
+    
+</mapper>

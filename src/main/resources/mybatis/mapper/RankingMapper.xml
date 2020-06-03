@@ -1,0 +1,633 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.aetherit.ats.ws.repository.mapper.RankingMapper">
+
+    <resultMap id="MovieResultMap" type="ATSMovieBas">
+        <id property="movId"                       	column="mov_Id" />
+        <result property="movName"             		column="mov_name" />
+        <result property="mins"             		column="mins" />
+        <result property="playCnt"               	column="play_cnt" />
+        <result property="playCntStr"             	column="play_cnt_str" />
+        <result property="downCnt"              	column="down_cnt" />
+        <result property="hasDown"              	column="has_down" typeHandler="BooleanOneZeroTypeHandler" />
+        <result property="loveCnt"              	column="love_cnt" />
+        <result property="hasLove"              	column="has_love" typeHandler="BooleanOneZeroTypeHandler" />
+        <result property="upCnt"              		column="up_cnt" />
+        <result property="hasUp"              		column="has_up" typeHandler="BooleanOneZeroTypeHandler" />
+        <result property="dissCnt"              	column="diss_cnt" />
+        <result property="hasDiss"              	column="has_diss" typeHandler="BooleanOneZeroTypeHandler" />
+        <result property="movSn"              		column="mov_sn" />
+        <result property="movSnOri"              	column="mov_sn_ori" />
+        <result property="movType"              	column="mov_type" />
+        <result property="domain"              		column="domain" />
+        <result property="P240"              		column="240P" />
+        <result property="P360"              		column="360P" />
+        <result property="P480"              		column="480P" />
+        <result property="P720"              		column="720P" />
+        <result property="P1080"              		column="1080P" />
+        <result property="movDesc"              	column="mov_desc" />
+        <result property="isMosaic"              	column="is_mosaic" typeHandler="BooleanOneZeroTypeHandler" />
+        <result property="movScore"              	column="mov_score" />
+        <result property="giftTotal"              	column="gift_total" />
+<!--         <result property="movSaving"              	column="mov_saving" /> -->
+        <result property="showYn"              		column="show_yn" typeHandler="BooleanOneZeroTypeHandler" />
+        <result property="showOrder"              	column="show_order" />
+        <result property="gmtCreateId"              column="gmt_create_Id" />
+        <result property="gmtCreate"              	column="gmt_create" />
+        <result property="modId"              		column="mod_id" />
+        <result property="modDt"              		column="mod_dt" />
+    </resultMap>
+    
+    <resultMap id="ActorResultMap" type="ATSMovieActorBas">
+        <id property="actorIdx"                       	column="actor_idx" />
+        <result property="actorName"             		column="actor_name" />
+        <result property="actorNameCn"             		column="actor_name_cn" />
+        <result property="actorNameEn"             		column="actor_name_en" />
+        <result property="actorNameJp"             		column="actor_name_jp" />
+        <result property="briefIntroduction"            column="briefIntroduction" />
+        <result property="photoDomain"              	column="photo_domain" />
+        <result property="photoUrl"             		column="photo_url" />
+        <result property="videosCount"              	column="videos_count" />
+        <result property="height"              			column="height" />
+        <result property="bust"              			column="bust" />
+        <result property="hips"              			column="hips" />
+        <result property="waist"              			column="waist" />
+        <result property="cup"              			column="cup" />
+        <result property="starLevel"              		column="star_level" />
+        <result property="regId"              			column="reg_id" />
+        <result property="regDt"              			column="reg_dt" />
+        <result property="modId"              			column="mod_id" />
+        <result property="modDt"              			column="mod_dt" />
+    </resultMap>
+
+	
+	<resultMap id="SearchTxnResultMap" type="ATSMovieSearchTxn">
+        <id property="srchIdx"                       	column="srch_idx" />
+        <result property="srchWord"             		column="srch_word" />
+        <result property="srchType"             		column="srch_type" />
+        <result property="srchCnt"             			column="srch_cnt" />
+        <result property="langCd"             			column="lang_cd" />
+    </resultMap>
+	
+    
+    <select id="selectViewRankingList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
+        SELECT bas.mov_Id,
+			   bas.mov_name,
+			   bas.mins,
+			   bas.play_cnt,
+			   bas.play_cnt_str,
+			   bas.down_cnt,
+			   bas.has_down,
+			   bas.love_cnt,
+			   bas.has_love,
+			   bas.up_cnt,
+			   bas.has_up,
+			   bas.diss_cnt,
+			   bas.has_diss,
+			   bas.mov_sn,
+			   bas.mov_sn_ori,
+			   bas.mov_type,
+			   bas.domain,
+			   bas.240P,
+			   bas.360P,
+			   bas.480P,
+			   bas.720P,
+			   bas.1080P,
+			   bas.mov_desc,
+			   bas.is_mosaic,
+			   bas.mov_score,
+			   bas.gift_total,
+			   bas.show_yn,
+			   bas.show_order,
+			   bas.gmt_create_Id,
+			   bas.gmt_create,
+			   bas.mod_id,
+			   bas.mod_dt
+		FROM   movie_bas bas,
+			   (
+				SELECT mov_Id,
+					   COUNT(1) AS viewCnt
+				FROM   movie_hst
+				WHERE  1 = 1
+		<if test="type!=null and type==1">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+		]]>
+		</if>
+		<if test="type!=null and type==2">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+		]]>
+		</if>
+		<if test="type!=null and type==3">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+		]]>
+		</if> 				
+				AND    access_type = 'view'
+				AND    lang_cd = #{langCd}
+				GROUP BY mov_Id
+				) hst
+		WHERE   bas.mov_Id = hst.mov_Id
+		ORDER BY hst.viewCnt	
+		
+		<if test="pageSize!=null and pageSize!=0">
+		LIMIT  #{pageSize} 
+		</if>
+		<if test="page!=null and page!=0">
+        OFFSET #{page}
+		</if>
+    </select>
+    
+    
+    <select id="selectRankingViewMovieTotalCount" parameterType="java.util.HashMap" resultType="int">
+        SELECT COUNT(1)
+		FROM   movie_bas bas,
+			   (
+				SELECT mov_Id,
+					   COUNT(1) AS viewCnt
+				FROM   movie_hst
+				WHERE  1 = 1
+		<if test="type!=null and type==1">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+		]]>
+		</if>
+		<if test="type!=null and type==2">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+		]]>
+		</if>
+		<if test="type!=null and type==3">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+		]]>
+		</if> 				
+				AND    access_type = 'view'
+				AND    lang_cd = #{langCd}
+				GROUP BY mov_Id
+				) hst
+		WHERE   bas.mov_Id = hst.mov_Id
+    </select>
+    
+    
+    <select id="selectNewRankingList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
+        SELECT bas.mov_Id,
+			   bas.mov_name,
+			   bas.mins,
+			   bas.play_cnt,
+			   bas.play_cnt_str,
+			   bas.down_cnt,
+			   bas.has_down,
+			   bas.love_cnt,
+			   bas.has_love,
+			   bas.up_cnt,
+			   bas.has_up,
+			   bas.diss_cnt,
+			   bas.has_diss,
+			   bas.mov_sn,
+			   bas.mov_sn_ori,
+			   bas.mov_type,
+			   bas.domain,
+			   bas.240P,
+			   bas.360P,
+			   bas.480P,
+			   bas.720P,
+			   bas.1080P,
+			   bas.mov_desc,
+			   bas.is_mosaic,
+			   bas.mov_score,
+			   bas.gift_total,
+			   bas.show_yn,
+			   bas.show_order,
+			   bas.gmt_create_Id,
+			   bas.gmt_create,
+			   bas.mod_id,
+			   bas.mod_dt
+		FROM   movie_bas bas,
+			   (
+				SELECT mov_Id,
+					   COUNT(1) AS viewCnt
+				FROM   movie_hst
+				WHERE  1 = 1
+		<if test="type!=null and type==1">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+		]]>
+		</if>
+		<if test="type!=null and type==2">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+		]]>
+		</if>
+		<if test="type!=null and type==3">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+		]]>
+		</if> 				
+				AND    access_type = 'view'
+				AND    lang_cd = #{langCd}
+				GROUP BY mov_Id
+				) hst
+		WHERE   1 = 1
+		<if test="type!=null and type==1">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+		]]>
+		</if>
+		<if test="type!=null and type==2">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+		]]>
+		</if>
+		<if test="type!=null and type==3">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+		]]>
+		</if>
+		AND     bas.mov_Id = hst.mov_Id
+		order by hst.viewCnt
+		
+		<if test="pageSize!=null and pageSize!=0">
+		LIMIT  #{pageSize} 
+		</if>
+		<if test="page!=null and page!=0">
+        OFFSET #{page}
+		</if>
+    </select>
+    
+    
+    <select id="selectRankingNewMovieTotalCount" parameterType="java.util.HashMap" resultType="int">
+        SELECT COUNT(1)
+		FROM   movie_bas bas,
+			   (
+				SELECT mov_Id,
+					   COUNT(1) AS viewCnt
+				FROM   movie_hst
+				WHERE  1 = 1
+		<if test="type!=null and type==1">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+		]]>
+		</if>
+		<if test="type!=null and type==2">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+		]]>
+		</if>
+		<if test="type!=null and type==3">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+		]]>
+		</if> 				
+				AND    access_type = 'view'
+				AND    lang_cd = #{langCd}
+				GROUP BY mov_Id
+				) hst
+		WHERE   1 = 1
+		<if test="type!=null and type==1">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+		]]>
+		</if>
+		<if test="type!=null and type==2">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+		]]>
+		</if>
+		<if test="type!=null and type==3">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+		]]>
+		</if> 
+		AND     bas.mov_Id = hst.mov_Id
+    </select>
+    
+    
+    <select id="selectLusirRankingList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
+        SELECT bas.mov_Id,
+			   bas.mov_name,
+			   bas.mins,
+			   bas.play_cnt,
+			   bas.play_cnt_str,
+			   bas.down_cnt,
+			   bas.has_down,
+			   bas.love_cnt,
+			   bas.has_love,
+			   bas.up_cnt,
+			   bas.has_up,
+			   bas.diss_cnt,
+			   bas.has_diss,
+			   bas.mov_sn,
+			   bas.mov_sn_ori,
+			   bas.mov_type,
+			   bas.domain,
+			   bas.240P,
+			   bas.360P,
+			   bas.480P,
+			   bas.720P,
+			   bas.1080P,
+			   bas.mov_desc,
+			   bas.is_mosaic,
+			   bas.mov_score,
+			   bas.gift_total,
+			   bas.show_yn,
+			   bas.show_order,
+			   bas.gmt_create_Id,
+			   bas.gmt_create,
+			   bas.mod_id,
+			   bas.mod_dt
+		FROM   movie_bas bas,
+			   (
+				SELECT mov_Id,
+					   COUNT(1) AS viewCnt
+				FROM   movie_reaction_txn
+				WHERE  1 = 1
+		<if test="type!=null and type==1">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+		]]>
+		</if>
+		<if test="type!=null and type==2">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+		]]>
+		</if>
+		<if test="type!=null and type==3">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+		]]>
+		</if> 				
+				AND    reaction_type = 'up'
+				GROUP BY mov_Id
+				) txn
+		WHERE   bas.mov_Id = txn.mov_Id
+		ORDER BY txn.viewCnt	
+		
+		<if test="pageSize!=null and pageSize!=0">
+		LIMIT  #{pageSize} 
+		</if>
+		<if test="page!=null and page!=0">
+        OFFSET #{page}
+		</if>
+    </select>
+    
+    
+    <select id="selectRankingLusirMovieTotalCount" parameterType="java.util.HashMap" resultType="int">
+        SELECT COUNT(1)
+		FROM   movie_bas bas,
+			   (
+				SELECT mov_Id,
+					   COUNT(1) AS viewCnt
+				FROM   movie_reaction_txn
+				WHERE  1 = 1
+		<if test="type!=null and type==1">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+		]]>
+		</if>
+		<if test="type!=null and type==2">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+		]]>
+		</if>
+		<if test="type!=null and type==3">
+		<![CDATA[				
+				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+		]]>
+		</if> 				
+				AND    reaction_type = 'up'
+				GROUP BY mov_Id
+				) txn
+		WHERE   bas.mov_Id = txn.mov_Id
+    </select>
+    
+    
+    <select id="selectTucaoRankingList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
+        SELECT bas.mov_Id,
+			   bas.mov_name,
+			   bas.mins,
+			   bas.play_cnt,
+			   bas.play_cnt_str,
+			   bas.down_cnt,
+			   bas.has_down,
+			   bas.love_cnt,
+			   bas.has_love,
+			   bas.up_cnt,
+			   bas.has_up,
+			   bas.diss_cnt,
+			   bas.has_diss,
+			   bas.mov_sn,
+			   bas.mov_sn_ori,
+			   bas.mov_type,
+			   bas.domain,
+			   bas.240P,
+			   bas.360P,
+			   bas.480P,
+			   bas.720P,
+			   bas.1080P,
+			   bas.mov_desc,
+			   bas.is_mosaic,
+			   bas.mov_score,
+			   bas.gift_total,
+			   bas.show_yn,
+			   bas.show_order,
+			   bas.gmt_create_Id,
+			   bas.gmt_create,
+			   bas.mod_id,
+			   bas.mod_dt
+		FROM   movie_bas bas,
+			   (
+			   	SELECT reaction.mov_id, 
+					   reaction.upCnt/(reaction.upCnt+reaction.dissCnt) AS grade
+				FROM 
+					   (
+						SELECT mov_Id,
+							   SUM(case WHEN reaction_type = 'up' THEN 1 ELSE 0 END) upCnt,
+							   SUM(case WHEN reaction_type = 'diss' THEN 1 ELSE 0 END) dissCnt
+						FROM   movie_reaction_txn
+						WHERE  1 = 1
+				<if test="type!=null and type==1">
+				<![CDATA[				
+						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+				]]>
+				</if>
+				<if test="type!=null and type==2">
+				<![CDATA[				
+						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+				]]>
+				</if>
+				<if test="type!=null and type==3">
+				<![CDATA[				
+						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+				]]>
+				</if> 
+						AND    reaction_type IN ('up','diss')
+						GROUP BY mov_Id
+					   ) reaction
+			   ) txn
+		WHERE bas.mov_Id = txn.mov_Id
+		ORDER BY txn.grade
+		
+		<if test="pageSize!=null and pageSize!=0">
+		LIMIT  #{pageSize} 
+		</if>
+		<if test="page!=null and page!=0">
+        OFFSET #{page}
+		</if>	
+    </select>
+    
+    
+    <select id="selectRankingTucaoMovieTotalCount" parameterType="java.util.HashMap" resultType="int">
+        SELECT COUNT(1)
+		FROM   movie_bas bas,
+			   (
+			   	SELECT reaction.mov_id, 
+					   reaction.upCnt/(reaction.upCnt+reaction.dissCnt) AS grade
+				FROM 
+					   (
+						SELECT mov_Id,
+							   SUM(case WHEN reaction_type = 'up' THEN 1 ELSE 0 END) upCnt,
+							   SUM(case WHEN reaction_type = 'diss' THEN 1 ELSE 0 END) dissCnt
+						FROM   movie_reaction_txn
+						WHERE  1 = 1
+				<if test="type!=null and type==1">
+				<![CDATA[				
+						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+				]]>
+				</if>
+				<if test="type!=null and type==2">
+				<![CDATA[				
+						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+				]]>
+				</if>
+				<if test="type!=null and type==3">
+				<![CDATA[				
+						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+				]]>
+				</if> 
+						AND    reaction_type IN ('up','diss')
+						GROUP BY mov_Id
+					   ) reaction
+			   ) txn
+		WHERE bas.mov_Id = txn.mov_Id
+    </select>
+    
+    
+    
+    <select id="selectRankingActorList" parameterType="java.util.HashMap" resultMap="ActorResultMap">
+        SELECT bas.actor_idx,
+			   bas.actor_name,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','chn',bas.actor_idx) AS actor_name_cn,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','eng',bas.actor_idx) AS actor_name_en,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','jpn',bas.actor_idx) AS actor_name_jp,
+			   bas.briefIntroduction,
+			   bas.photo_domain,
+			   bas.photo_url,
+			   bas.videos_count,
+			   bas.height,
+			   bas.bust,
+			   bas.hips,
+			   bas.waist,
+			   bas.cup,
+			   bas.star_level,
+			   bas.reg_id,
+			   bas.reg_dt,
+			   bas.mod_id,
+			   bas.mod_dt
+		FROM   movie_actor_bas bas,
+			   (
+				SELECT rel.actor_idx,
+					   SUM(hst.count) vieCnt
+				FROM   (			   
+						SELECT mov_Id,
+							   COUNT(1) AS count
+						FROM   movie_hst
+						WHERE  1 = 1
+				<if test="type!=null and type==1">
+				<![CDATA[				
+						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+				]]>
+				</if>
+				<if test="type!=null and type==2">
+				<![CDATA[				
+						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+				]]>
+				</if>
+				<if test="type!=null and type==3">
+				<![CDATA[				
+						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+				]]>
+				</if> 
+						AND    access_type = 'view'
+						AND    lang_cd = #{langCd}
+						GROUP BY mov_Id
+					   ) hst, 
+					   movie_actor_rel rel	
+				WHERE  hst.mov_Id = rel.mov_Id
+				GROUP BY rel.actor_idx
+				) hst
+		AND     bas.mov_Id = hst.mov_Id
+		ORDER BY hst.vieCnt
+		
+		<if test="pageSize!=null and pageSize!=0">
+		LIMIT  #{pageSize} 
+		</if>
+		<if test="page!=null and page!=0">
+        OFFSET #{page}
+		</if>
+    </select>
+    
+    <select id="selectRankingActorTotalCount" parameterType="java.util.HashMap" resultType="int">
+        SELECT COUNT(1)
+		FROM   movie_actor_bas bas,
+			   (
+				SELECT rel.actor_idx,
+					   SUM(hst.count) vieCnt
+				FROM   (			   
+						SELECT mov_Id,
+							   COUNT(1) AS count
+						FROM   movie_hst
+						WHERE  1 = 1
+				<if test="type!=null and type==1">
+				<![CDATA[				
+						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+				]]>
+				</if>
+				<if test="type!=null and type==2">
+				<![CDATA[				
+						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+				]]>
+				</if>
+				<if test="type!=null and type==3">
+				<![CDATA[				
+						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+				]]>
+				</if> 
+						AND    access_type = 'view'
+						AND    lang_cd = #{langCd}
+						GROUP BY mov_Id
+					   ) hst, 
+					   movie_actor_rel rel	
+				WHERE  hst.mov_Id = rel.mov_Id
+				GROUP BY rel.actor_idx
+				) hst
+		AND     bas.mov_Id = hst.mov_Id
+    </select>
+    
+    
+    <select id="selectSearchHotList" parameterType="java.util.HashMap" resultMap="ActorResultMap">
+        SELECT srch_idx,
+			   srch_word,
+			   srch_type,
+			   srch_cnt,
+			   lang_cd
+		FROM   movie_search_txn
+		WHERE  lang_cd = #{langCd}
+		ORDER BY srch_cnt
+		
+		<if test="pageSize!=null and pageSize!=0">
+		LIMIT  #{pageSize} 
+		</if>
+    </select>
+    
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="cacheEnabled"     value="true"/>
+        <setting name="useGeneratedKeys" value="true"/>
+        <setting name="defaultExecutorType" value="REUSE"/>
+    </settings>
+
+    <typeAliases>
+        <typeAlias type="io.aetherit.ats.ws.model.ATSUser" alias="ATSUser" />
+        <typeAlias type="io.aetherit.ats.ws.model.type.ATSUserType" alias="ATSUserType" />
+        
+        
+        <typeAlias type="io.aetherit.ats.ws.model.dao.ATSAdvertisiong" alias="ATSAdvertisiong" />
+        <typeAlias type="io.aetherit.ats.ws.model.dao.ATSMovieTagDtl" alias="ATSMovieTagDtl" />
+        <typeAlias type="io.aetherit.ats.ws.model.dao.ATSMovieChannelCtg" alias="ATSMovieChannelCtg" />
+        <typeAlias type="io.aetherit.ats.ws.model.dao.ATSMovieBas" alias="ATSMovieBas" />
+        <typeAlias type="io.aetherit.ats.ws.model.dao.ATSMovieActorBas" alias="ATSMovieActorBas" />
+        <typeAlias type="io.aetherit.ats.ws.model.dao.ATSMovieCoverImage" alias="ATSMovieCoverImage" />
+        <typeAlias type="io.aetherit.ats.ws.model.dao.ATSMovieSearchTxn" alias="ATSMovieSearchTxn" />
+        <typeAlias type="io.aetherit.ats.ws.model.dao.ATSMovieReactionTxn" alias="ATSMovieReactionTxn" />
+
+        <typeAlias type="io.aetherit.ats.ws.repository.typehandler.BooleanYnTypeHandler" alias="BooleanYnTypeHandler" />
+        <typeAlias type="io.aetherit.ats.ws.repository.typehandler.BooleanOneZeroTypeHandler" alias="BooleanOneZeroTypeHandler" />
+    </typeAliases>
+
+    <mappers>
+        <mapper resource="mybatis/mapper/UserMapper.xml" />
+        <mapper resource="mybatis/mapper/AdvertisingMapper.xml" />
+        <mapper resource="mybatis/mapper/MovieChannelMapper.xml" />
+        <mapper resource="mybatis/mapper/MovieMapper.xml" />
+        <mapper resource="mybatis/mapper/RankingMapper.xml" />
+    </mappers>
+</configuration>

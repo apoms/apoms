@@ -1,0 +1,803 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.aetherit.ats.ws.repository.mapper.MovieMapper">
+
+    <resultMap id="MovieResultMap" type="ATSMovieBas">
+        <id property="movId"                       	column="mov_Id" />
+        <result property="movName"             		column="mov_name" />
+        <result property="mins"             		column="mins" />
+        <result property="playCnt"               	column="play_cnt" />
+        <result property="playCntStr"             	column="play_cnt_str" />
+        <result property="downCnt"              	column="down_cnt" />
+        <result property="hasDown"              	column="has_down" typeHandler="BooleanOneZeroTypeHandler" />
+        <result property="loveCnt"              	column="love_cnt" />
+        <result property="hasLove"              	column="has_love" typeHandler="BooleanOneZeroTypeHandler" />
+        <result property="upCnt"              		column="up_cnt" />
+        <result property="hasUp"              		column="has_up" typeHandler="BooleanOneZeroTypeHandler" />
+        <result property="dissCnt"              	column="diss_cnt" />
+        <result property="hasDiss"              	column="has_diss" typeHandler="BooleanOneZeroTypeHandler" />
+        <result property="movSn"              		column="mov_sn" />
+        <result property="movSnOri"              	column="mov_sn_ori" />
+        <result property="movType"              	column="mov_type" />
+        <result property="domain"              		column="domain" />
+        <result property="P240"              		column="240P" />
+        <result property="P360"              		column="360P" />
+        <result property="P480"              		column="480P" />
+        <result property="P720"              		column="720P" />
+        <result property="P1080"              		column="1080P" />
+        <result property="movDesc"              	column="mov_desc" />
+        <result property="isMosaic"              	column="is_mosaic" typeHandler="BooleanOneZeroTypeHandler" />
+        <result property="movScore"              	column="mov_score" />
+        <result property="giftTotal"              	column="gift_total" />
+<!--         <result property="movSaving"              	column="mov_saving" /> -->
+        <result property="showYn"              		column="show_yn" typeHandler="BooleanOneZeroTypeHandler" />
+        <result property="showOrder"              	column="show_order" />
+        <result property="gmtCreateId"              column="gmt_create_Id" />
+        <result property="gmtCreate"              	column="gmt_create" />
+        <result property="modId"              		column="mod_id" />
+        <result property="modDt"              		column="mod_dt" />
+    </resultMap>
+    
+    <resultMap id="MovieCoverImageResultMap" type="ATSMovieCoverImage">
+        <id property="coverIdx"                       	column="cover_idx" />
+        <result property="movId"             			column="mov_Id" />
+        <result property="coverDomain"             		column="cover_domain" />
+        <result property="horizontalLarge"              column="horizontal_large" />
+        <result property="horizontalSmall"             	column="horizontal_small" />
+        <result property="verticalLarge"              	column="vertical_large" />
+        <result property="verticalSmall"              	column="vertical_small" />
+        <result property="langCd"              			column="lang_cd" />
+        <result property="modId"              			column="mod_id" />
+        <result property="modDt"              			column="mod_dt" />
+    </resultMap>
+    
+    <resultMap id="MovieTagDtlResultMap" type="ATSMovieTagDtl">
+        <id property="id"                       		column="id" />
+        <result property="movId"             			column="mov_Id" />
+        <result property="name"             		column="name" />
+        <result property="langCd"              			column="lang_cd" />
+    </resultMap>
+    
+    <resultMap id="ActorResultMap" type="ATSMovieActorBas">
+        <id property="actorIdx"                       	column="actor_idx" />
+        <result property="actorName"             		column="actor_name" />
+        <result property="actorNameCn"             		column="actor_name_cn" />
+        <result property="actorNameEn"             		column="actor_name_en" />
+        <result property="actorNameJp"             		column="actor_name_jp" />
+        <result property="briefIntroduction"            column="briefIntroduction" />
+        <result property="photoDomain"              	column="photo_domain" />
+        <result property="photoUrl"             		column="photo_url" />
+        <result property="videosCount"              	column="videos_count" />
+        <result property="height"              			column="height" />
+        <result property="bust"              			column="bust" />
+        <result property="hips"              			column="hips" />
+        <result property="waist"              			column="waist" />
+        <result property="cup"              			column="cup" />
+        <result property="starLevel"              		column="star_level" />
+        <result property="regId"              			column="reg_id" />
+        <result property="regDt"              			column="reg_dt" />
+        <result property="modId"              			column="mod_id" />
+        <result property="modDt"              			column="mod_dt" />
+    </resultMap>
+
+    <select id="selectNewMovieList" resultMap="MovieResultMap">
+        SELECT mov_Id,
+			   mov_name,
+			   mins,
+			   play_cnt,
+			   play_cnt_str,
+			   down_cnt,
+			   has_down,
+			   love_cnt,
+			   has_love,
+			   up_cnt,
+			   has_up,
+			   diss_cnt,
+			   has_diss,
+			   mov_sn,
+			   mov_sn_ori,
+			   mov_type,
+			   domain,
+			   240P,
+			   360P,
+			   480P,
+			   720P,
+			   1080P,
+			   mov_desc,
+			   is_mosaic,
+			   mov_score,
+			   gift_total,
+			   show_yn,
+			   show_order,
+			   gmt_create_Id,
+			   gmt_create,
+			   mod_id,
+			   mod_dt
+		FROM   movie_bas
+		ORDER BY gmt_create DESC
+		LIMIT  4
+    </select>
+    
+    
+    <select id="selectMovieTagDtlList" parameterType="java.util.HashMap" resultMap="MovieTagDtlResultMap">
+        SELECT id,
+			   mov_Id,
+			   name,
+			   lang_cd,
+		FROM   movie_tag_dtl
+		WHERE  mov_Id = #{movId}
+		AND    lang_cd = #{langCd}
+    </select>
+    
+    
+    <select id="selectCoverImageList" parameterType="java.util.HashMap" resultMap="MovieCoverImageResultMap">
+        SELECT cover_idx,
+			   mov_Id,
+			   cover_domain,
+			   horizontal_large,
+			   horizontal_small,
+			   vertical_large,
+			   vertical_small,
+			   lang_cd,
+			   mod_id,
+			   mod_dt
+		FROM   movie_cover_image
+		WHERE  mov_id = #{movId}
+		AND    lang_cd = #{langCd}
+    </select>
+    
+    
+    <select id="selectRecommendActorList" parameterType="java.util.HashMap" resultMap="ActorResultMap">
+        SELECT actor_idx,
+			   actor_name,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','chn',actor_idx) AS actor_name_cn,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','eng',actor_idx) AS actor_name_en,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','jpn',actor_idx) AS actor_name_jp,
+			   briefIntroduction,
+			   photo_domain,
+			   photo_url,
+			   videos_count,
+			   height,
+			   bust,
+			   hips,
+			   waist,
+			   cup,
+			   star_level,
+			   reg_id,
+			   reg_dt,
+			   mod_id,
+			   mod_dt
+		FROM   movie_actor_bas
+		
+		LIMIT  #{pageSize}
+    </select>
+
+
+	<select id="selectActorMovieList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
+        SELECT bas.mov_Id,
+			   bas.mov_name,
+			   bas.mins,
+			   bas.play_cnt,
+			   bas.play_cnt_str,
+			   bas.down_cnt,
+			   bas.has_down,
+			   bas.love_cnt,
+			   bas.has_love,
+			   bas.up_cnt,
+			   bas.has_up,
+			   bas.diss_cnt,
+			   bas.has_diss,
+			   bas.mov_sn,
+			   bas.mov_sn_ori,
+			   bas.mov_type,
+			   bas.domain,
+			   bas.240P,
+			   bas.360P,
+			   bas.480P,
+			   bas.720P,
+			   bas.1080P,
+			   bas.mov_desc,
+			   bas.is_mosaic,
+			   bas.mov_score,
+			   bas.gift_total,
+/*			   bas.mov_saving,			*/
+			   bas.show_yn,
+			   bas.show_order,
+			   bas.gmt_create_Id,
+			   bas.gmt_create,
+			   bas.mod_id,
+			   bas.mod_dt
+		FROM   movie_bas bas,
+			   movie_actor_rel actor
+		WHERE  1 = 1
+		<if test="actorIdx!=null and actorIdx!=0">
+		AND	   actor.actor_idx = #{actorIdx}
+		</if>
+		AND    bas.mov_id = actor.mov_id
+		ORDER BY gmt_create DESC
+			
+		<if test="pageSize!=null and pageSize!=0">
+		LIMIT  #{pageSize} 
+		</if>
+		<if test="page!=null and page!=0">
+        OFFSET #{page}
+		</if>
+    </select>
+    
+    
+    <select id="selectActorMovieTotalCount" parameterType="java.util.HashMap" resultType="int">
+        SELECT COUNT(1)
+		FROM   movie_bas bas,
+			   movie_actor_rel actor
+		WHERE  1 = 1
+		<if test="actorIdx!=null and actorIdx!=0">
+		AND	   actor.actor_idx = #{actorIdx}
+		</if>
+		AND    bas.mov_id = actor.mov_id
+    </select>
+
+
+    <select id="selectTodayRankingList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
+        SELECT bas.mov_Id,
+			   bas.mov_name,
+			   bas.mins,
+			   bas.play_cnt,
+			   bas.play_cnt_str,
+			   bas.down_cnt,
+			   bas.has_down,
+			   bas.love_cnt,
+			   bas.has_love,
+			   bas.up_cnt,
+			   bas.has_up,
+			   bas.diss_cnt,
+			   bas.has_diss,
+			   bas.mov_sn,
+			   bas.mov_sn_ori,
+			   bas.mov_type,
+			   bas.domain,
+			   bas.240P,
+			   bas.360P,
+			   bas.480P,
+			   bas.720P,
+			   bas.1080P,
+			   bas.mov_desc,
+			   bas.is_mosaic,
+			   bas.mov_score,
+			   bas.gift_total,
+			   bas.show_yn,
+			   bas.show_order,
+			   bas.gmt_create_Id,
+			   bas.gmt_create,
+			   bas.mod_id,
+			   bas.mod_dt
+		FROM   movie_bas bas,
+			   (
+				SELECT mov_Id,
+					   COUNT(1) AS viewCnt
+				FROM   movie_hst
+		<![CDATA[				
+				WHERE  TIMESTAMPDIFF(hour, access_dt, now())<=24
+		]]>				
+				AND    access_type = 'view'
+				AND    lang_cd = #{langCd}
+				GROUP BY mov_Id
+				) hst
+		WHERE   bas.mov_Id = hst.mov_Id
+		ORDER BY hst.viewCnt	
+		
+		LIMIT  #{pageSize}
+    </select>
+
+    
+    <select id="selectTodayRecommandList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
+        SELECT mov_Id,
+			   mov_name,
+			   mins,
+			   play_cnt,
+			   play_cnt_str,
+			   down_cnt,
+			   has_down,
+			   love_cnt,
+			   has_love,
+			   up_cnt,
+			   has_up,
+			   diss_cnt,
+			   has_diss,
+			   mov_sn,
+			   mov_sn_ori,
+			   mov_type,
+			   domain,
+			   240P,
+			   360P,
+			   480P,
+			   720P,
+			   1080P,
+			   mov_desc,
+			   is_mosaic,
+			   mov_score,
+			   gift_total,
+/*			   mov_saving,			*/
+			   show_yn,
+			   show_order,
+			   gmt_create_Id,
+			   gmt_create,
+			   mod_id,
+			   mod_dt
+		FROM   movie_bas
+		
+		LIMIT  #{pageSize}
+    </select>
+    
+    
+    <select id="selectWonderfulMovieList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
+        SELECT mov_Id,
+			   mov_name,
+			   mins,
+			   play_cnt,
+			   play_cnt_str,
+			   down_cnt,
+			   has_down,
+			   love_cnt,
+			   has_love,
+			   up_cnt,
+			   has_up,
+			   diss_cnt,
+			   has_diss,
+			   mov_sn,
+			   mov_sn_ori,
+			   mov_type,
+			   domain,
+			   240P,
+			   360P,
+			   480P,
+			   720P,
+			   1080P,
+			   mov_desc,
+			   is_mosaic,
+			   mov_score,
+			   gift_total,
+/*			   mov_saving,			*/
+			   show_yn,
+			   show_order,
+			   gmt_create_Id,
+			   gmt_create,
+			   mod_id,
+			   mod_dt
+		FROM   movie_bas
+		
+		LIMIT  #{pageSize}
+    </select>
+    
+    
+    <select id="selectSelectionMovieList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
+        SELECT bas.mov_Id,
+			   bas.mov_name,
+			   bas.mins,
+			   bas.play_cnt,
+			   bas.play_cnt_str,
+			   bas.down_cnt,
+			   bas.has_down,
+			   bas.love_cnt,
+			   bas.has_love,
+			   bas.up_cnt,
+			   bas.has_up,
+			   bas.diss_cnt,
+			   bas.has_diss,
+			   bas.mov_sn,
+			   bas.mov_sn_ori,
+			   bas.mov_type,
+			   bas.domain,
+			   bas.240P,
+			   bas.360P,
+			   bas.480P,
+			   bas.720P,
+			   bas.1080P,
+			   bas.mov_desc,
+			   bas.is_mosaic,
+			   bas.mov_score,
+			   bas.gift_total,
+/*			   bas.mov_saving,			*/
+			   bas.show_yn,
+			   bas.show_order,
+			   bas.gmt_create_Id,
+			   bas.gmt_create,
+			   bas.mod_id,
+			   bas.mod_dt
+		FROM   movie_bas bas,
+			   movie_channel_rel channel
+		WHERE  channel.module_Id = #{moduleId}
+		AND    bas.mov_id = channel.mov_id
+		ORDER BY gmt_create DESC
+			
+		LIMIT  #{pageSize}
+    </select>
+    
+    
+    <select id="selectNewTopActorList" parameterType="java.util.HashMap" resultMap="ActorResultMap">
+        SELECT actor_idx,
+			   actor_name,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','chn',actor_idx) AS actor_name_cn,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','eng',actor_idx) AS actor_name_en,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','jpg',actor_idx) AS actor_name_jp,
+			   briefIntroduction,
+			   photo_domain,
+			   photo_url,
+			   videos_count,
+			   height,
+			   bust,
+			   hips,
+			   waist,
+			   cup,
+			   star_level,
+			   reg_id,
+			   reg_dt,
+			   mod_id,
+			   mod_dt
+		FROM   movie_actor_bas
+		
+		LIMIT  #{pageSize}
+    </select>
+    
+    
+    <select id="selectMovieList" parameterType="java.util.HashMap"  resultMap="MovieResultMap">
+        SELECT mov_Id,
+			   mov_name,
+			   mins,
+			   play_cnt,
+			   play_cnt_str,
+			   down_cnt,
+			   has_down,
+			   love_cnt,
+			   has_love,
+			   up_cnt,
+			   has_up,
+			   diss_cnt,
+			   has_diss,
+			   mov_sn,
+			   mov_sn_ori,
+			   mov_type,
+			   domain,
+			   240P,
+			   360P,
+			   480P,
+			   720P,
+			   1080P,
+			   mov_desc,
+			   is_mosaic,
+			   mov_score,
+			   gift_total,
+			   show_yn,
+			   show_order,
+			   gmt_create_Id,
+			   gmt_create,
+			   mod_id,
+			   mod_dt
+		FROM   movie_bas
+		WHERE  1 = 1
+		
+		<if test="selectionType!=null">
+		AND    mov_Id IN (SELECT mov_Id
+						  FROM   movie_channel_rel
+						  WHERE  module_id in (SELECT module_id
+						  					   FROM   movie_channel_ctg
+						  					   WHERE  has_selection = #{selectionType}
+						  					  )
+						 )
+		</if>
+		
+		<if test="moduleId!=null and moduleId!=0">
+		AND    mov_Id IN (SELECT mov_Id
+						  FROM   movie_channel_rel
+						  WHERE  module_id = #{moduleId}
+						 )
+		</if>
+		
+		<if test="startMin!=null">
+		<![CDATA[
+		AND  TIME_TO_SEC(TIMEDIFF(time_format(mins,'%H:%i:%s'),time_format('00:00:00','%H:%i:%s')))/60 >= #{startMin}
+		]]> 
+		</if>
+		<if test="endMin!=null and endMin!=0">
+		<![CDATA[
+        AND TIME_TO_SEC(TIMEDIFF(time_format(mins,'%H:%i:%s'),time_format('00:00:00','%H:%i:%s')))/60 <= #{endMin}
+	    ]]>
+		</if>
+		<if test="dayFrom!=null">
+		<![CDATA[
+		AND  TIMESTAMPDIFF(second, gmt_create, NOW()) <= 60 * 60 * 24 * #{dayFrom}
+		]]> 
+		</if>
+		
+		<if test="pageSize!=null and pageSize!=0">
+		LIMIT  #{pageSize} 
+		</if>
+		<if test="page!=null and page!=0">
+        OFFSET #{page}
+		</if>
+    </select>
+    
+    <select id="selectMovieTotalCount" parameterType="java.util.HashMap"  resultType="int">
+        SELECT COUNT(1)
+		FROM   movie_bas
+		WHERE  1 = 1
+		<if test="selectionType!=null">
+		AND    mov_Id IN (SELECT mov_Id
+						  FROM   movie_channel_rel
+						  WHERE  module_id in (SELECT module_id
+						  					   FROM   movie_channel_ctg
+						  					   WHERE  has_selection = #{selectionType}
+						  					  )
+						 )
+		</if>
+		
+		<if test="moduleId!=null and moduleId!=0">
+		AND    mov_Id IN (SELECT mov_Id
+						  FROM   movie_channel_rel
+						  WHERE  module_id = #{moduleId}
+						 )
+		</if>
+		
+		<if test="startMin!=null">
+		<![CDATA[
+		AND  TIME_TO_SEC(TIMEDIFF(time_format(mins,'%H:%i:%s'),time_format('00:00:00','%H:%i:%s')))/60 >= #{startMin}
+		]]> 
+		</if>
+		<if test="endMin!=null and endMin!=0">
+		<![CDATA[
+        AND TIME_TO_SEC(TIMEDIFF(time_format(mins,'%H:%i:%s'),time_format('00:00:00','%H:%i:%s')))/60 <= #{endMin}
+	    ]]>
+		</if>
+		<if test="dayFrom!=null">
+		<![CDATA[
+		AND  TIMESTAMPDIFF(second, gmt_create, NOW()) <= 60 * 60 * 24 * #{dayFrom}
+		]]> 
+		</if>
+    </select>
+    
+    
+    <select id="selectSearchMovieList" parameterType="java.util.HashMap"  resultMap="MovieResultMap">
+        SELECT mov_Id,
+			   mov_name,
+			   mins,
+			   play_cnt,
+			   play_cnt_str,
+			   down_cnt,
+			   has_down,
+			   love_cnt,
+			   has_love,
+			   up_cnt,
+			   has_up,
+			   diss_cnt,
+			   has_diss,
+			   mov_sn,
+			   mov_sn_ori,
+			   mov_type,
+			   domain,
+			   240P,
+			   360P,
+			   480P,
+			   720P,
+			   1080P,
+			   mov_desc,
+			   is_mosaic,
+			   mov_score,
+			   gift_total,
+/*			   mov_saving,			*/
+			   show_yn,
+			   show_order,
+			   gmt_create_Id,
+			   gmt_create,
+			   mod_id,
+			   mod_dt
+		FROM   movie_bas
+		WHERE  1 = 1
+		<if test="keyword!=null">
+		AND    mov_name LIKE CONCAT('%',#{keyword},'%')
+		</if>
+		
+		<if test="pageSize!=null and pageSize!=0">
+		LIMIT  #{pageSize} 
+		</if>
+		<if test="page!=null and page!=0">
+        OFFSET #{page}
+		</if>
+    </select>
+    
+    <select id="selectSearchMovieTotalCount" parameterType="java.util.HashMap"  resultType="int">
+        SELECT COUNT(1)
+		FROM   movie_bas
+		WHERE  1 = 1
+		<if test="keyword!=null">
+		AND    mov_name LIKE CONCAT('%',#{keyword},'%')
+		</if>
+    </select>
+    
+    
+    <select id="selectActorDetail" parameterType="java.util.HashMap" resultMap="ActorResultMap">
+        SELECT actor_idx,
+			   actor_name,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','chn',actor_idx) AS actor_name_cn,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','eng',actor_idx) AS actor_name_en,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','jpn',actor_idx) AS actor_name_jp,
+			   briefIntroduction,
+			   photo_domain,
+			   photo_url,
+			   videos_count,
+			   height,
+			   bust,
+			   hips,
+			   waist,
+			   cup,
+			   star_level,
+			   reg_id,
+			   reg_dt,
+			   mod_id,
+			   mod_dt
+		FROM   movie_actor_bas
+		where  actor_idx = #{id}
+    </select>
+    
+    
+    <select id="selectMovieActorList" parameterType="java.util.HashMap" resultMap="ActorResultMap">
+        SELECT actor.actor_idx,
+			   actor.actor_name,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','chn',actor.actor_idx) AS actor_name_cn,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','eng',actor.actor_idx) AS actor_name_en,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','jpn',actor.actor_idx) AS actor_name_jp,
+			   actor.briefIntroduction,
+			   actor.photo_domain,
+			   actor.photo_url,
+			   actor.videos_count,
+			   actor.height,
+			   actor.bust,
+			   actor.hips,
+			   actor.waist,
+			   actor.cup,
+			   actor.star_level,
+			   actor.reg_id,
+			   actor.reg_dt,
+			   actor.mod_id,
+			   actor.mod_dt
+		FROM   movie_actor_bas actor,
+			   movie_actor_rel rel
+		where  rel.mov_Id = #{movId}
+		and	   actor.actor_idx = rel.actor_idx
+    </select>
+    
+    
+    <select id="selectMovieBas" parameterType="java.util.HashMap"  resultMap="MovieResultMap">
+        SELECT mov_Id,
+			   mov_name,
+			   mins,
+			   play_cnt,
+			   play_cnt_str,
+			   down_cnt,
+			   has_down,
+			   love_cnt,
+			   has_love,
+			   up_cnt,
+			   has_up,
+			   diss_cnt,
+			   has_diss,
+			   mov_sn,
+			   mov_sn_ori,
+			   mov_type,
+			   domain,
+			   240P,
+			   360P,
+			   480P,
+			   720P,
+			   1080P,
+			   mov_desc,
+			   is_mosaic,
+			   mov_score,
+			   gift_total,
+			   show_yn,
+			   show_order,
+			   gmt_create_Id,
+			   gmt_create,
+			   mod_id,
+			   mod_dt
+		FROM   movie_bas
+		where  mov_Id = #{movId}
+    </select>
+    
+    
+    <select id="selectSimilarMovieList" parameterType="java.util.HashMap"  resultMap="MovieResultMap">
+        SELECT mov_Id,
+			   mov_name,
+			   mins,
+			   play_cnt,
+			   play_cnt_str,
+			   down_cnt,
+			   has_down,
+			   love_cnt,
+			   has_love,
+			   up_cnt,
+			   has_up,
+			   diss_cnt,
+			   has_diss,
+			   mov_sn,
+			   mov_sn_ori,
+			   mov_type,
+			   domain,
+			   240P,
+			   360P,
+			   480P,
+			   720P,
+			   1080P,
+			   mov_desc,
+			   is_mosaic,
+			   mov_score,
+			   gift_total,
+			   show_yn,
+			   show_order,
+			   gmt_create_Id,
+			   gmt_create,
+			   mod_id,
+			   mod_dt
+		FROM   movie_bas
+		WHERE  mov_Id = #{movId}
+    </select>
+    
+    
+    <insert id="insertMovieReactionTxnUp" parameterType="ATSMovieReactionTxn">
+    	INSERT INTO movie_reaction_txn 
+        (
+            reaction_idx,
+            mov_Id,
+            user_id,
+            reaction_type,
+            parent_idx,
+            reaction_dtl,
+            reaction_dt
+        ) 
+        VALUES 
+        (
+            #{reactionIdx},
+            #{movId},
+            #{userId},
+            #{reactionType},
+            #{parentIdx},
+            #{reactionDtl},
+            NOW()
+        )
+    </insert>
+    
+    <update id="updateMovieBasUp">
+    	UPDATE 	movie_bas
+        SET		up_cnt = IFNULL(up_cnt,0) + 1
+        WHERE   mov_Id = #{movId}
+    </update>
+    
+    
+    <insert id="insertMovieReactionTxnDown" parameterType="ATSMovieReactionTxn">
+    	INSERT INTO movie_reaction_txn 
+        (
+            reaction_idx,
+            mov_Id,
+            user_id,
+            reaction_type,
+            parent_idx,
+            reaction_dtl,
+            reaction_dt
+        ) 
+        VALUES 
+        (
+            #{reactionIdx},
+            #{movId},
+            #{userId},
+            #{reactionType},
+            #{parentIdx},
+            #{reactionDtl},
+            NOW()
+        )
+    </insert>
+    
+    <update id="updateMovieBasDown">
+    	UPDATE 	movie_bas
+        SET		down_cnt = IFNULL(down_cnt,0) + 1
+        WHERE   mov_Id = #{movId}
+    </update>
+    
+    
+</mapper>

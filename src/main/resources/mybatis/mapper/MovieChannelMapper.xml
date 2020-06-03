@@ -1,0 +1,49 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.aetherit.ats.ws.repository.mapper.ChannelMapper">
+
+    <resultMap id="channelResultMap" type="ATSMovieChannelCtg">
+        <id property="id"                       	column="id" />
+        <result property="channelType"             	column="channel_type" />
+        <result property="hasSelection"             column="has_selection" typeHandler="BooleanOneZeroTypeHandler"/>
+        <result property="name"               		column="name" />
+        <result property="parentModule"             column="parent_module" />
+        <result property="showType"              	column="show_type" />
+    </resultMap>
+    
+
+    <select id="selectDefaultChannelList" resultMap="channelResultMap">
+        SELECT module_Id AS id,
+        	   channel_type,
+			   has_selection,
+			   module_name AS name,
+			   parent_module,
+			   show_type
+		FROM   movie_channel_ctg
+		WHERE  channel_type = 1
+    </select>
+    
+    
+    <select id="selectSubChannelList" resultMap="channelResultMap">
+        SELECT module_Id AS id,
+        	   channel_type,
+			   has_selection,
+			   module_name AS name,
+			   parent_module,
+			   show_type
+		FROM   movie_channel_ctg
+		WHERE  channel_type = 2
+    </select>
+    
+    
+    <select id="selectSubChannel2List" parameterType="java.util.HashMap"  resultMap="channelResultMap">
+        SELECT module_Id AS id,
+        	   channel_type,
+			   has_selection,
+			   module_name AS name,
+			   parent_module,
+			   show_type
+		FROM   movie_channel_ctg
+		WHERE  parent_module = #{moduleId}
+		AND    module_Id != #{moduleId}
+    </select>
+</mapper>
