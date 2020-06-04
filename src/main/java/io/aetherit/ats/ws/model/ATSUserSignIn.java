@@ -14,8 +14,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ATSUserSignIn {
-    @NotBlank(message = "user.login.message.mustid")
-    private String userId;
+	@Email
+    @NotBlank(message = "user.login.message.mustemail")
+    private String email;
     @NotNull
     private String password;
 }

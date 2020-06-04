@@ -20,18 +20,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
+
 
 public class CommonUtil {
 
 	static String charset = "utf-8";
-	/**
-	 * local PC
-	 */
-//	static String host = "http://192.168.0.119:3001";
-	/**
-	 * develope Server
-	 */
-	static String host = "http://192.168.0.87:8081";
+	
+	private static final String accessKeyId = "AKIAXKNSETLATJZRBNWL";
+	private static final String secretAccessKey = "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";
 	
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(CommonUtil.class);
@@ -113,14 +114,15 @@ public class CommonUtil {
     }
     
     /**
-     * Transaction ID 생성 Util Method
-     * @param preFix
-     * @return
-     */
-    public String getTransactionId(char preFix) {
-    	String trxId = preFix + "-" + UUID.randomUUID().toString();
-    	
-    	return trxId.toUpperCase();
-    }
+	 * 아마존 이메일 서비스 접속
+	 * @return
+	 * @throws Exception
+	 */
+	public AmazonSimpleEmailService getAwsSesMailCredentials() throws Exception {
+		
+	    AWSCredentials awsCredentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
+	    AmazonSimpleEmailService sesClient = AmazonSimpleEmailServiceClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCredentials)).withRegion("us-west-2").build();
+	    return sesClient;
+	}
 	
 }

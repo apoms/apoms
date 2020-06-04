@@ -5,6 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.aetherit.ats.ws.model.ATSSimpleUser;
 import io.aetherit.ats.ws.model.ATSUserSignIn;
 import io.aetherit.ats.ws.model.ATSUserToken;
+import io.aetherit.ats.ws.model.ATSVerify;
 import io.aetherit.ats.ws.service.AuthenticationService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -27,6 +30,8 @@ import io.swagger.annotations.ApiImplicitParams;
 @RestController
 @RequestMapping("/api/v1/authentications")
 public class AuthenticationController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 	
 	private static final int MAX_INACTIVE_INTERVAL = 21600; // 6 hour
 	
@@ -41,7 +46,7 @@ public class AuthenticationController {
     public ResponseEntity<ATSUserToken> getLoginToken(HttpServletRequest httpRequest, HttpSession session, @RequestBody @Valid ATSUserSignIn account) {
     	
     	httpRequest.getSession().setMaxInactiveInterval(MAX_INACTIVE_INTERVAL);
-        final ATSUserToken token = authenticationService.getToken(account.getUserId(), account.getPassword(), session);
+        final ATSUserToken token = authenticationService.getToken(account.getEmail(), account.getPassword(), session);
         return new ResponseEntity<ATSUserToken>(token, HttpStatus.OK);
     }
 
@@ -64,5 +69,19 @@ public class AuthenticationController {
         final ATSSimpleUser user = authenticationService.getUser();
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
+    
+    
+    @PostMapping("/verifycode")
+    public ResponseEntity<Boolean> requestVerifyCodeEmail(@RequestBody ATSVerify verify) throws Exception{
+		boolean result = authenticationService.requestVerifyCodeEmail(verify.getEmail());
+    	return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 
+    @PostMapping("/")
+    public ResponseEntity<?> checkVerifyEmail(@RequestBody ATSVerify verify){
+    	
+    	boolean result = authenticationService.checkVerifyEmail(verify);
+    	logger.debug("AUTH REUSLT {}" , result );
+    	return new ResponseEntity<Boolean>(result, HttpStatus.OK);
+    }
 }

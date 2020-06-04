@@ -1021,7 +1021,7 @@ public class MovieService {
     }
     
     @Transactional
-    public void setMovieUp(HashMap<String,Object> map, String userId) {
+    public void setMovieUp(HashMap<String,Object> map, long userId) {
     	ATSMovieReactionTxn movieReaction = ATSMovieReactionTxn.builder()
     														   .movId((int) map.get("movId"))
     														   .userId(userId)
@@ -1033,7 +1033,7 @@ public class MovieService {
     }
     
     @Transactional
-    public void setMovieDown(HashMap<String,Object> map, String userId) {
+    public void setMovieDown(HashMap<String,Object> map, long userId) {
     	ATSMovieReactionTxn movieReaction = ATSMovieReactionTxn.builder()
 															   .movId((int) map.get("movId"))
 															   .userId(userId)

@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class ATSMovieReactionTxn {
     private int reactionIdx;
     private int movId;
-    private String userId;
+    private long userId;
     private ATSReactionType reactionType;
     private String parentIdx;
     private String reactionDtl;

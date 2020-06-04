@@ -8,6 +8,7 @@ import io.aetherit.ats.ws.model.type.ATSUserType;
 
 public interface UserMapper {
     ATSUser selectUser(String userid);
+    ATSUser selectUserByEmail(String email);
     ATSUser selectUserByPhoneNo(String phoneNo);
     
     List<ATSUser> selectUsersWhereType(ATSUserType type);

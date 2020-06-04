@@ -1,5 +1,5 @@
 package io.aetherit.ats.ws.model.type;
 
 public enum ATSUserType {
-    UNKNOWN, ADMIN, USER, MEMBER, ANCHOR
+    UNKNOWN, ADMIN, USER, BROADCASTER
 }

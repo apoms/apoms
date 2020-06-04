@@ -10,11 +10,15 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import io.aetherit.ats.ws.exception.AtsCustomException;
 import io.aetherit.ats.ws.exception.NotAcceptableIdException;
 import io.aetherit.ats.ws.model.ATSUser;
+import io.aetherit.ats.ws.model.ATSUserSignUp;
+import io.aetherit.ats.ws.model.ATSVerify;
 import io.aetherit.ats.ws.model.type.ATSUserType;
 import io.aetherit.ats.ws.repository.UserRepository;
 
@@ -23,10 +27,10 @@ public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
 //    private static final String DEFAULT_ADMIN_ID = "admin";
-    private static final String DEFAULT_ADMIN_ID = "99999999999";
+    private static final long DEFAULT_ADMIN_ID = 999999999;
     private static final String DEFAULT_ADMIN_PASSWORD = "1234";
-    private static final String DEFAULT_ADMIN_NAME = "administrator";
-    private static final String DEFAULT_PHONE_NO = "99999999999";
+    private static final String DEFAULT_ADMIN_EMAIL = "admin@ats.ws";
+    private static final String DEFAULT_PHONE_NO = "00099990000";
     private static final Map<String, Boolean> notAcceptableIdMap = new HashMap<>();
     static {
         notAcceptableIdMap.put("check", false);
@@ -39,11 +43,13 @@ public class UserService {
     }
 
     private UserRepository repository;
+    private VerifyService verifyService;
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository repository, VerifyService verifyService, PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.verifyService = verifyService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -57,12 +63,12 @@ public class UserService {
             final ATSUser newAdmin = ATSUser.builder()
                     .userId(DEFAULT_ADMIN_ID)
                     .password(DEFAULT_ADMIN_PASSWORD)
-                    .userName(DEFAULT_ADMIN_NAME)
+                    .email(DEFAULT_ADMIN_EMAIL)
                     .phoneNo(DEFAULT_PHONE_NO)
                     .type(ATSUserType.ADMIN)
                     .build();
 
-            createNewUser(newAdmin);
+            createNewUser(ATSUserSignUp.builder().user(newAdmin).emailVerificationCode("999999").build());
         }
     }
 
@@ -74,23 +80,47 @@ public class UserService {
         return repository.selectUsers(type);
     }
     
+    public ATSUser getUserByEmail(String email) {
+        return repository.selectUserByEmail(email);
+    }
+    
     public ATSUser getUserByPhoneNo(String phoneNo) {
-        return repository.selectUserByPhoneNo(phoneNo);
+    	return repository.selectUserByPhoneNo(phoneNo);
     }
 
-    public ATSUser createNewUser(ATSUser user) {
-        if(isNotAcceptableId(user.getUserId())) {
-            throw new NotAcceptableIdException(user.getUserId());
+    public ATSUser createNewUser(ATSUserSignUp userSignUp) {
+    	
+    	ATSUser user = userSignUp.getUser();
+		ATSVerify verify = ATSVerify.builder().email(user.getEmail()).authenticationKey(userSignUp.getEmailVerificationCode()).build();
+
+		if(isNotAcceptableId(user.getUserId()+"")) {
+            throw new NotAcceptableIdException(user.getUserId()+"");
         }
-        final String encodedPassword = passwordEncoder.encode(user.getPassword());
-
-        user.setPassword(encodedPassword);
-        user.setRegDt(LocalDateTime.now());
-        user.setModDt(LocalDateTime.now());
-
-        repository.insertUser(user);
-
-        return user;
+		
+		if(user.getType()!=ATSUserType.ADMIN) {
+			//CHECK VERIFICATION CODE
+			boolean verificationResult = verifyService.checkVerify(verify);
+			if(!verificationResult) {
+				throw new AtsCustomException("verifycation code not valid");
+			}
+			
+			//CHECK USER ALREADY REGIST
+			ATSUser checkUser = repository.selectUserByEmail(user.getEmail());
+			if(checkUser != null ) {
+				throw new AtsCustomException("User Already", HttpStatus.BAD_REQUEST);
+			}
+		}
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		
+		//PRIORITY INSERT USER
+		repository.insertUser(user);
+		
+		try {
+			verifyService.deleteVerify(user.getEmail());
+		}catch(Exception e) {
+			throw new AtsCustomException(e.getLocalizedMessage());
+		}
+		return user; 
     }
 
     private boolean isNotAcceptableId(String id) {

@@ -1,0 +1,107 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.aetherit.ats.ws.repository.mapper.LiveRoomMapper">
+
+    <resultMap id="liveRoomResultMap" type="ATSLiveRoom">
+        <id property="roomId"                       	column="room_id" />
+        <result property="userId"             			column="user_id" />
+        <result property="typeCode"             		column="type_code"/>
+        <result property="statusCode"             		column="status_code"/>
+        <result property="thumnailUrl"               	column="thumnail_url" />
+        <result property="regDt"             			column="reg_dt" />
+    </resultMap>
+    
+    <resultMap id="webrtcServerResultMap" type="ATSWebrtcServer">
+        <id property="serverId"                       	column="server_id" />
+        <result property="serverName"             		column="server_name" />
+        <result property="maxUsers"             		column="max_users" />
+        <result property="activationFlag"             	column="activation_flag" />
+        <result property="comment"             			column="comment" />
+        <result property="priority"             		column="priority" />
+        <result property="webrtcUrl"             		column="webrtc_url"/>
+        <result property="regDt"             			column="reg_dt" />
+        <result property="modDt"             			column="mod_dt" />
+    </resultMap>
+
+
+    <select id="selectLiveRoomList" resultMap="liveRoomResultMap">
+        SELECT room_id,
+			   user_id,
+			   type_code,
+			   status_code,
+			   thumnail_url,
+			   reg_dt
+		FROM   ats_live_room
+    </select>
+    
+    
+    <insert id="insertLiveRoom" parameterType="ATSLiveRoom">
+		INSERT INTO ats_live_room 
+        (
+        	room_id,
+		    user_id,
+		    type_code,
+		    status_code,
+		    thumnail_url,
+		    reg_dt
+        )
+        VALUES 
+        (
+            #{roomId},
+            #{userId},
+            #{typeCode},
+            #{statusCode},
+            #{thumnailUrl},
+            NOW()
+        )
+    </insert>
+    
+    <select id="selectWebrtcServer" resultMap="liveRoomResultMap">
+        SELECT server_id,
+			   server_name,
+			   max_users,
+			   activation_flag,
+			   comment,
+			   priority,
+			   webrtc_url,
+			   reg_dt,
+			   mod_dt
+		FROM   ats_webrtc_server
+		WHERE  1 = 1
+		<if test="roomId!=null and roomId!=0">
+		AND    server_id = (SELECT server_id
+							FROM   ats_server_room
+							WHERE  room_id = #{roomId}
+						   )
+		</if>
+		<if test="roomId!=null and roomId==0">
+		AND    server_id = (SELECT min_joined.server_id
+							FROM (SELECT server_id,
+										 SUM(joined_count) joined_count
+								  FROM   ats_server_room
+								  GROUP BY server_id
+								  ORDER BY joined_count
+								  LIMIT 1
+								 ) min_joined
+						   )
+		</if>
+    </select>
+    
+    
+    <insert id="insertServerRoom" parameterType="ATSServerRoom">
+		INSERT INTO ats_server_room 
+        (
+        	room_id,
+		    server_id,
+		    reg_dt
+        )
+        VALUES 
+        (
+            #{roomId},
+            #{serverId},
+            NOW()
+        )
+        ON DUPLICATE KEY UPDATE room_id=#{roomId}, server_id=#{serverId}
+    </insert>
+    
+    
+</mapper>

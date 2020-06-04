@@ -1,0 +1,52 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.aetherit.ats.ws.repository.mapper.VerifyMapper">
+
+
+	<!--  isAlready verify check -->
+	<select id="selectVerifyByEmail" resultType="boolean" parameterType="String">
+        SELECT IF(COUNT(*) > 0 , TRUE , FALSE)
+        FROM ats_authentication 
+        WHERE email = #{email} 
+    </select>
+    
+	<!--  isAlready verify check for Limit Request-->
+	<select id="selectVerifyByEmailForLimitRquest" resultType="boolean" parameterType="String">
+        SELECT IF(COUNT(*) > 0 , TRUE , FALSE)
+        FROM ats_authentication 
+        WHERE 
+        	email = #{email}
+        	AND	DATE_ADD(created_datetime, INTERVAL 10 MINUTE) > NOW() 
+	     
+    </select>
+	
+	<!-- just verify -->
+    <select id="checkVerify" resultType="boolean" parameterType="ATSVerify">
+        SELECT IF(COUNT(*) > 0 , TRUE , FALSE)
+        FROM ats_authentication 
+        WHERE 
+        	expire_datetime > UTC_TIMESTAMP() 
+     		AND email = #{email} 
+       		AND authentication_key = #{authenticationKey}
+    </select>
+	
+	<!-- INSERT -->
+	<insert id="insertVerify" parameterType="ATSVerify">
+		INSERT INTO ats_authentication ( 
+					authentication_key,
+					email,
+					expire_datetime,
+					created_datetime 
+				) VALUES (
+					#{authenticationKey},
+					#{email},
+					DATE_ADD(NOW(), INTERVAL 1 DAY),
+					NOW())
+	</insert>
+	
+    <!-- DELETE -->
+    <delete id="deleteVerify">
+          DELETE FROM ats_authentication
+          WHERE email=#{email}
+    </delete>
+
+</mapper>

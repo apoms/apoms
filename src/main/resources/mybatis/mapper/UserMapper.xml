@@ -2,9 +2,9 @@
 <mapper namespace="io.aetherit.ats.ws.repository.mapper.UserMapper">
     <resultMap id="userResultMap" type="ATSUser">
         <id property="userId"                       column="user_id" />
-        <result property="phoneNo"             		column="phone_no" />
         <result property="password"             	column="pwd" />
-        <result property="userName"                 column="user_name" />
+        <result property="email"                 column="email" />
+        <result property="phoneNo"             		column="phone_no" />
         <result property="type"                 	column="user_type" />
         <result property="regDt"      				column="reg_dt" />
         <result property="modDt"      				column="mod_dt" />
@@ -12,9 +12,9 @@
 
     <select id="selectUser" parameterType="String" resultMap="userResultMap">
         SELECT user_id,
-        	   phone_no,
-               pwd,
-               user_name,
+        	   pwd,
+        	   email,
+       	       phone_no,
                user_type,
                reg_dt,
                mod_dt
@@ -22,12 +22,24 @@
         WHERE  user_id = #{userId}
     </select>
     
+    <select id="selectUserByEmail" parameterType="String" resultMap="userResultMap">
+        SELECT user_id,
+        	   pwd,
+        	   email,
+       	       phone_no,
+               user_type,
+               reg_dt,
+               mod_dt
+        FROM   user_bas
+        WHERE  email = #{email}
+    </select>
+    
     
     <select id="selectUserByPhoneNo" parameterType="String" resultMap="userResultMap">
         SELECT user_id,
-        	   phone_no,
-               pwd,
-               user_name,
+        	   pwd,
+        	   email,
+       	       phone_no,
                user_type,
                reg_dt,
                mod_dt
@@ -38,9 +50,9 @@
 
     <select id="selectUsersWhereType" parameterType="ATSUserType" resultMap="userResultMap">
         SELECT user_id,
-        	   phone_no,
-               pwd,
-               user_name,
+        	   pwd,
+        	   email,
+       	       phone_no,
                user_type,
                reg_dt,
                mod_dt
@@ -52,9 +64,9 @@
     
     <select id="selectUserList" resultMap="userResultMap">
         SELECT user_id,
-        	   phone_no,
-               pwd,
-               user_name,
+        	   pwd,
+        	   email,
+       	       phone_no,
                user_type,
                reg_dt,
                mod_dt
@@ -83,9 +95,9 @@
         INSERT INTO user_bas 
         (
         	user_id,
+        	pwd,
+        	email,
        	    phone_no,
-            pwd,
-            user_name,
             user_type,
             reg_dt,
             mod_dt
@@ -93,9 +105,9 @@
         VALUES 
         (
             #{userId},
-            #{phoneNo},
             #{password},
-            #{userName},
+            #{email},
+            #{phoneNo},
             #{type},
             NOW(),
             NOW()

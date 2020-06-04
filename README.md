@@ -12,7 +12,7 @@ Prepare Library
     
 
 Usage:
-`docker run -d --name upay.ps
+`docker run -d --name ats.ws
   -p 8090:8090
   -p 8888:8888
   -e TZ=Asia/Seoul

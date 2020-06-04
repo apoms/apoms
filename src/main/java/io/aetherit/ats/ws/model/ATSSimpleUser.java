@@ -15,9 +15,9 @@ import lombok.NoArgsConstructor;
 public class ATSSimpleUser implements Serializable {
     public static final long serialVersionUID = 1L;
 
-    private String userId;
+    private long userId;
+    private String email;
     private String phoneNo;
-    private String userName;
     private LocalDateTime regDt;
     private LocalDateTime modDt;
 }

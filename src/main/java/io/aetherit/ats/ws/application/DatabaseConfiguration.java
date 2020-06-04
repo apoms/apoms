@@ -23,9 +23,11 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.aetherit.ats.ws.application.support.DatabaseProperties;
 import io.aetherit.ats.ws.repository.mapper.AdvertisingMapper;
 import io.aetherit.ats.ws.repository.mapper.ChannelMapper;
+import io.aetherit.ats.ws.repository.mapper.LiveRoomMapper;
 import io.aetherit.ats.ws.repository.mapper.MovieMapper;
 import io.aetherit.ats.ws.repository.mapper.RankingMapper;
 import io.aetherit.ats.ws.repository.mapper.UserMapper;
+import io.aetherit.ats.ws.repository.mapper.VerifyMapper;
 import io.aetherit.ats.ws.util.SystemEnvUtil;
 
 @Configuration
@@ -126,6 +128,20 @@ public class DatabaseConfiguration {
     @Bean
     public MapperFactoryBean<RankingMapper> RankingMapper(@Qualifier("psSqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
     	MapperFactoryBean<RankingMapper> bean = new MapperFactoryBean<>(RankingMapper.class);
+    	bean.setSqlSessionFactory(sqlSessionFactory);
+    	return bean;
+    }
+    
+    @Bean
+    public MapperFactoryBean<LiveRoomMapper> LiveRoomMapper(@Qualifier("psSqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
+    	MapperFactoryBean<LiveRoomMapper> bean = new MapperFactoryBean<>(LiveRoomMapper.class);
+    	bean.setSqlSessionFactory(sqlSessionFactory);
+    	return bean;
+    }
+    
+    @Bean
+    public MapperFactoryBean<VerifyMapper> VerifyMapper(@Qualifier("psSqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
+    	MapperFactoryBean<VerifyMapper> bean = new MapperFactoryBean<>(VerifyMapper.class);
     	bean.setSqlSessionFactory(sqlSessionFactory);
     	return bean;
     }

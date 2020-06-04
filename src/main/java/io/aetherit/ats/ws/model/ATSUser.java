@@ -2,8 +2,6 @@ package io.aetherit.ats.ws.model;
 
 import java.time.LocalDateTime;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import io.aetherit.ats.ws.model.type.ATSUserType;
@@ -17,18 +15,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ATSUser {
-    private String userId;
+    private long userId;
     
     @NotNull
     private String password;
     
-    @NotNull
-    @NotBlank(message = "Please enter your phone number.")
+//    @Email
+//    @NotNull
+//    @NotBlank(message = "Please enter your email.")
+    private String email;
+    
+//    @NotNull
+//    @NotBlank(message = "Please enter your phone number.")
     private String phoneNo;
     
     @NotNull
-    private String userName;
-    
     private ATSUserType type;
     
     private LocalDateTime regDt;

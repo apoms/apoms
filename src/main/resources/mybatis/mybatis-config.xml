@@ -20,6 +20,11 @@
         <typeAlias type="io.aetherit.ats.ws.model.dao.ATSMovieCoverImage" alias="ATSMovieCoverImage" />
         <typeAlias type="io.aetherit.ats.ws.model.dao.ATSMovieSearchTxn" alias="ATSMovieSearchTxn" />
         <typeAlias type="io.aetherit.ats.ws.model.dao.ATSMovieReactionTxn" alias="ATSMovieReactionTxn" />
+        <typeAlias type="io.aetherit.ats.ws.model.dao.ATSLiveRoom" alias="ATSLiveRoom" />
+        <typeAlias type="io.aetherit.ats.ws.model.dao.ATSWebrtcServer" alias="ATSWebrtcServer" />
+        <typeAlias type="io.aetherit.ats.ws.model.dao.ATSServerRoom" alias="ATSServerRoom" />
+        
+        <typeAlias type="io.aetherit.ats.ws.model.ATSVerify" alias="ATSVerify" />
 
         <typeAlias type="io.aetherit.ats.ws.repository.typehandler.BooleanYnTypeHandler" alias="BooleanYnTypeHandler" />
         <typeAlias type="io.aetherit.ats.ws.repository.typehandler.BooleanOneZeroTypeHandler" alias="BooleanOneZeroTypeHandler" />
@@ -31,5 +36,7 @@
         <mapper resource="mybatis/mapper/MovieChannelMapper.xml" />
         <mapper resource="mybatis/mapper/MovieMapper.xml" />
         <mapper resource="mybatis/mapper/RankingMapper.xml" />
+        <mapper resource="mybatis/mapper/LiveRoomMapper.xml" />
+        <mapper resource="mybatis/mapper/VerifyMapper.xml" />
     </mappers>
 </configuration>

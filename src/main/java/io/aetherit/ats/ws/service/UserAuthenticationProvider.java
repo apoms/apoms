@@ -35,12 +35,12 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
         Assert.isInstanceOf(UsernamePasswordAuthenticationToken.class, request, "Only UsernamePasswordAuthenticationToken is supported");
 
         UsernamePasswordAuthenticationToken result = null;
-        final String userId = (String) request.getPrincipal();
+        final String email = (String) request.getPrincipal();
         final String password = (String) request.getCredentials();
         
-        final ATSUser user = userService.getUser(userId);
+        final ATSUser user = userService.getUserByEmail(email);
         if(user == null) {
-            throw new UsernameNotFoundException("User not found : " + userId);
+            throw new UsernameNotFoundException("User not found : " + email);
         }
         
         String userPassword = user.getPassword();
@@ -49,7 +49,7 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
             final List<GrantedAuthority> authorities = new ArrayList<>();
             authorities.add(new SimpleGrantedAuthority(user.getType().name()));
 
-            result = new UsernamePasswordAuthenticationToken(userId, password, authorities);
+            result = new UsernamePasswordAuthenticationToken(email, password, authorities);
             result.setDetails(getSimpleUser(user));
         } else {
             throw new BadCredentialsException("Bad credentials");
@@ -66,7 +66,7 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
         return ATSSimpleUser.builder()
         		.userId(user.getUserId())
         		.phoneNo(user.getPhoneNo())
-        		.userName(user.getUserName())
+        		.email(user.getEmail())
         		.regDt(user.getRegDt())
         		.modDt(user.getModDt())
         		.build();

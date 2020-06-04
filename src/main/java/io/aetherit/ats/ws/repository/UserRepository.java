@@ -22,6 +22,10 @@ public class UserRepository {
         return mapper.selectUser(userid);
     }
     
+    public ATSUser selectUserByEmail(String email) {
+    	return mapper.selectUserByEmail(email);
+    }
+    
     public ATSUser selectUserByPhoneNo(String phoneNo) {
     	return mapper.selectUserByPhoneNo(phoneNo);
     }

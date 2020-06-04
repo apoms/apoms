@@ -5,23 +5,19 @@ import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 
 import org.apache.catalina.connector.Connector;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.client.RestTemplate;
 
 import io.aetherit.ats.ws.application.support.TomcatProperties;
 import io.aetherit.ats.ws.util.AES256Util;
 import io.aetherit.ats.ws.util.CommonUtil;
 import io.aetherit.ats.ws.util.JsonControllerUtil;
 import io.aetherit.ats.ws.util.JsonUtil;
+import io.aetherit.ats.ws.util.MailTemplate;
 import io.aetherit.ats.ws.util.SystemEnvUtil;
 
 @Configuration
@@ -78,6 +74,11 @@ public class ApplicationConfiguration {
     @Bean
     public CommonUtil commonUtil() {
         return new CommonUtil();
+    }
+    
+    @Bean
+    public MailTemplate MailTemplate() {
+        return new MailTemplate();
     }
     
 }
