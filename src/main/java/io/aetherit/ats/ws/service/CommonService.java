@@ -9,11 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.aetherit.ats.ws.model.common.ATSSelection;
 import io.aetherit.ats.ws.model.dao.ATSMovieBas;
 import io.aetherit.ats.ws.model.dao.ATSMovieChannelCtg;
 import io.aetherit.ats.ws.model.dao.ATSMovieCoverImage;
 import io.aetherit.ats.ws.model.dao.ATSMovieTagDtl;
-import io.aetherit.ats.ws.model.main.ATSSelection;
 import io.aetherit.ats.ws.model.movie.ATSCover;
 import io.aetherit.ats.ws.model.movie.ATSMovieTag;
 import io.aetherit.ats.ws.model.movie.ATSNewMovie;

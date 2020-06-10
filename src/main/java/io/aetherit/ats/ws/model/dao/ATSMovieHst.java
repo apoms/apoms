@@ -2,7 +2,7 @@ package io.aetherit.ats.ws.model.dao;
 
 import java.time.LocalDateTime;
 
-import io.aetherit.ats.ws.model.type.ATSUserStatus;
+import io.aetherit.ats.ws.model.type.ATSHistoryTypeCode;
 import io.aetherit.ats.ws.model.type.ATSUserType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,14 +13,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ATSUserBas {
-    private String userId;
-    private String pwd;
-    private String nickName;
-    private String cntryCode;
-    private String phoneNo;
-    private ATSUserType userType;
-    private ATSUserStatus statusCode;
+public class ATSMovieHst {
+    private long hstIdx;
+    private int movId;
+    private long userId;
+    private ATSUserType typeCode;					// default : ANOYMOUS
+    private ATSHistoryTypeCode historyTypeCode;		// default : JOIN
     private LocalDateTime regDt;
-    private LocalDateTime modDt;
 }

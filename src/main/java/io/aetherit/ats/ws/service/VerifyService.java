@@ -29,8 +29,8 @@ public class VerifyService {
 		return result;
 	}
 
-	public int deleteVerify(String email) {
-		return verifyRepository.deleteVerify(email);		
+	public int deleteVerify(String phoneNo) {
+		return verifyRepository.deleteVerify(phoneNo);		
 	}
 	
  

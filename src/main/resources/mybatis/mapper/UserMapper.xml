@@ -3,61 +3,75 @@
     <resultMap id="userResultMap" type="ATSUser">
         <id property="userId"                       column="user_id" />
         <result property="password"             	column="pwd" />
-        <result property="email"                 column="email" />
+        <result property="nickName"                 column="nick_name" />
+        <result property="cntryCode"                 column="cntry_code" />
         <result property="phoneNo"             		column="phone_no" />
         <result property="type"                 	column="user_type" />
+        <result property="statusCode"               column="status_code" />
+        <result property="regDt"      				column="reg_dt" />
+        <result property="modDt"      				column="mod_dt" />
+    </resultMap>
+    
+    <resultMap id="followerResultMap" type="ATSFollower">
+        <id property="userId"                       column="user_id" />
+        <result property="nickName"                 column="nick_name" />
+        <result property="cntryCode"                 column="cntry_code" />
+        <result property="phoneNo"             		column="phone_no" />
+        <result property="userType"                 	column="user_type" />
+        <result property="statusCode"               column="status_code" />
+        <result property="relType"               	column="rel_type" />
+        <result property="relDt"               	column="rel_dt" />
         <result property="regDt"      				column="reg_dt" />
         <result property="modDt"      				column="mod_dt" />
     </resultMap>
 
-    <select id="selectUser" parameterType="String" resultMap="userResultMap">
+    <select id="selectUser" parameterType="long" resultMap="userResultMap">
         SELECT user_id,
         	   pwd,
-        	   email,
+        	   nick_name,
+        	   cntry_code,
        	       phone_no,
                user_type,
+               status_code,
                reg_dt,
                mod_dt
         FROM   user_bas
         WHERE  user_id = #{userId}
     </select>
-    
-    <select id="selectUserByEmail" parameterType="String" resultMap="userResultMap">
-        SELECT user_id,
-        	   pwd,
-        	   email,
-       	       phone_no,
-               user_type,
-               reg_dt,
-               mod_dt
-        FROM   user_bas
-        WHERE  email = #{email}
-    </select>
-    
-    
+
     <select id="selectUserByPhoneNo" parameterType="String" resultMap="userResultMap">
         SELECT user_id,
         	   pwd,
-        	   email,
+        	   nick_name,
+        	   cntry_code,
        	       phone_no,
                user_type,
+               status_code,
                reg_dt,
                mod_dt
         FROM   user_bas
-        WHERE  phone_no = #{phoneNo}
+        WHERE  CONCAT(cntry_code,phone_no) = #{phoneNo}
     </select>
     
 
-    <select id="selectUsersWhereType" parameterType="ATSUserType" resultMap="userResultMap">
+    <select id="selectUsersWhereType" parameterType="java.util.HashMap" resultMap="userResultMap">
         SELECT user_id,
         	   pwd,
-        	   email,
+        	   nick_name,
+        	   cntry_code,
        	       phone_no,
                user_type,
+               status_code,
                reg_dt,
                mod_dt
         FROM   user_bas
-        WHERE  user_type = #{type}
+        WHERE  1 = 1
+        <if test="type!=null and !type.equals('')">
+		AND    user_type = #{type}
+		</if>
+        <if test="statusCode!=null and !statusCode.equals('')">
+		AND    status_code = #{statusCode}
+		</if>
         ORDER BY reg_dt DESC
     </select>
     
@@ -65,9 +79,11 @@
     <select id="selectUserList" resultMap="userResultMap">
         SELECT user_id,
         	   pwd,
-        	   email,
+        	   nick_name,
+        	   cntry_code,
        	       phone_no,
                user_type,
+               status_code,
                reg_dt,
                mod_dt
         FROM   user_bas
@@ -86,7 +102,6 @@
         SELECT COUNT(1)
         FROM   user_bas
         WHERE  user_type = #{type}
-        ORDER BY reg_dt DESC
     </select>
     
     
@@ -95,10 +110,12 @@
         INSERT INTO user_bas 
         (
         	user_id,
-        	pwd,
-        	email,
-       	    phone_no,
+       	    pwd,
+       	    nick_name,
+       	    cntry_code,
+    	    phone_no,
             user_type,
+            status_code,
             reg_dt,
             mod_dt
         )
@@ -106,12 +123,55 @@
         (
             #{userId},
             #{password},
-            #{email},
+            #{nickName},
+            #{cntryCode},
             #{phoneNo},
             #{type},
+            #{statusCode},
             NOW(),
             NOW()
         )
     </insert>
+    
+    <update id="updateUserTypeAnchor" parameterType="ATSUser" >
+    	UPDATE user_bas
+    	SET	   user_type = #{type},
+    		   status_code = #{statusCode}
+    		   mod_dt = NOW()
+		WHERE  user_id = #{userId}
+    </update>
+    
+    
+    <select id="selectFollowerList" resultMap="followerResultMap">
+        SELECT bas.user_id,
+			   bas.nick_name,
+			   bas.cntry_code,
+		       bas.phone_no,
+		       bas.user_type,
+		       bas.status_code,
+		       rel.rel_type,
+		       rel.rel_dt,
+		       bas.reg_dt,
+		       bas.mod_dt
+		FROM   user_bas bas,
+			   user_rel rel
+		WHERE  bas.user_id = rel.rel_id
+    </select>
+    
+    <select id="selectFollowingList" resultMap="followerResultMap">
+        SELECT bas.user_id,
+			   bas.nick_name,
+			   bas.cntry_code,
+		       bas.phone_no,
+		       bas.user_type,
+		       bas.status_code,
+		       rel.rel_type,
+		       rel.rel_dt,
+		       bas.reg_dt,
+		       bas.mod_dt
+		FROM   user_bas bas,
+			   user_rel rel
+		WHERE  bas.user_id = rel.user_id
+    </select>
     
 </mapper>

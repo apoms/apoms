@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ATSVerify {
 	private String authenticationKey;
-	private String email;
+	private String phoneNo;
 	private String oldPassword;
 	private String password; 
 }

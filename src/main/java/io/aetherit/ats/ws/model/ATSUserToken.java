@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ATSUserToken {
     private String token;
+    private String chatToken;
     private ATSSimpleUser user;
 }

@@ -54,9 +54,10 @@
 		FROM 	advertising_bas base,
 			  	advertising_image image,
 			  	advertising_show_rel rel
-		WHERE 	show_location = #{location}
+		WHERE 	1 = 1
 		AND		base.ad_id = image.ad_id
 		AND   	base.ad_id = rel.ad_id
+		and     image.lang_cd = #{langCd}
     </select>
     
     

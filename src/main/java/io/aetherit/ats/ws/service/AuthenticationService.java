@@ -21,13 +21,16 @@ import com.amazonaws.services.simpleemail.model.Message;
 import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 
 import io.aetherit.ats.ws.exception.AtsCustomException;
+import io.aetherit.ats.ws.exception.UserPhoneDuplicationException;
 import io.aetherit.ats.ws.model.ATSSimpleUser;
 import io.aetherit.ats.ws.model.ATSUser;
+import io.aetherit.ats.ws.model.ATSUserSignIn;
 import io.aetherit.ats.ws.model.ATSUserToken;
 import io.aetherit.ats.ws.model.ATSVerify;
 import io.aetherit.ats.ws.repository.UserRepository;
 import io.aetherit.ats.ws.repository.VerifyRepository;
 import io.aetherit.ats.ws.util.CommonUtil;
+import io.aetherit.ats.ws.util.JwtTokenUtil;
 import io.aetherit.ats.ws.util.MailTemplate;
 
 
@@ -40,6 +43,7 @@ public class AuthenticationService {
     private UserRepository userRepository;
     private VerifyRepository verifyRepository;
     private CommonUtil commonUtil;
+    private JwtTokenUtil jwtTokenUtil;
     private MailTemplate mailTemplate;
 
     @Autowired
@@ -47,16 +51,43 @@ public class AuthenticationService {
     							, UserRepository userRepository
     							, VerifyRepository verifyRepository
     							, CommonUtil commonUtil
+    							, JwtTokenUtil jwtTokenUtil
     							, MailTemplate mailTemplate) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.verifyRepository = verifyRepository;
         this.commonUtil = commonUtil;
+        this.jwtTokenUtil = jwtTokenUtil;
         this.mailTemplate = mailTemplate;
     }
+    
+    @SuppressWarnings("static-access")
+    public ATSUserToken getAnoymousToken(HttpSession session) {
+    	final String cntryCode = "+86";
+    	final String phoneNo = "01000000000000";
+    	final String passwd = "anoymous";
+        final Authentication request = new UsernamePasswordAuthenticationToken(cntryCode+phoneNo, passwd);
+        final Authentication result = authenticationManager.anoymousAuthenticate(request,passwd);
+        
+        if ((result != null) && (result.isAuthenticated())) {
+            SecurityContextHolder.getContext().setAuthentication(result);
+        } else {
+            return null;
+        }
+        ATSSimpleUser simpleUser = (ATSSimpleUser) result.getDetails();
+        
+        String jwt = jwtTokenUtil.getJwtToken(simpleUser);
 
-	public ATSUserToken getToken(String email, String rawPassword, HttpSession session) {
-        final Authentication request = new UsernamePasswordAuthenticationToken(email, rawPassword);
+        return ATSUserToken.builder()
+                .token(session.getId())
+                .chatToken(jwt)
+                .user((ATSSimpleUser) result.getDetails())
+                .build();
+    }
+
+	@SuppressWarnings("static-access")
+	public ATSUserToken getToken(ATSUserSignIn account, HttpSession session) {
+        final Authentication request = new UsernamePasswordAuthenticationToken(account.getCntryCode()+account.getName(), account.getPassword());
         final Authentication result = authenticationManager.authenticate(request);
         
         if ((result != null) && (result.isAuthenticated())) {
@@ -64,10 +95,12 @@ public class AuthenticationService {
         } else {
             return null;
         }
-//        ATSSimpleUser simpleUser = (ATSSimpleUser) result.getDetails();
+        ATSSimpleUser simpleUser = (ATSSimpleUser) result.getDetails();
+        String jwt = jwtTokenUtil.getJwtToken(simpleUser);
 
         return ATSUserToken.builder()
                 .token(session.getId())
+                .chatToken(jwt)
                 .user((ATSSimpleUser) result.getDetails())
                 .build();
     }
@@ -84,32 +117,67 @@ public class AuthenticationService {
 		return result == 1;
 	}
     
-	public boolean checkVerifyEmail(ATSVerify verify) {
+	public boolean checkVerifyPhoneNo(ATSVerify verify) {
 		boolean result = verifyRepository.checkVerify(verify);
 		if(!result) throw new AtsCustomException("Verification Error", HttpStatus.BAD_REQUEST);
 		return result;
 	}
 	
+	
 	@Transactional
-	public boolean requestVerifyCodeEmail(String email) throws Exception {
+//	public boolean requestVerifyCodePhoneNo(ATSUserSignIn verify) throws Exception {
+	public String requestVerifyCodePhoneNo(ATSUserSignIn verify) throws Exception {
 		
-		int key = new Random().nextInt(999999);;
+		int key = new Random().nextInt(9999);;
 		String randomNumber = String.valueOf(key);
+		String phoneNo = verify.getCntryCode()+verify.getName();
 		
-		ATSUser user = userRepository.selectUserByEmail(email);
+		ATSUser user = userRepository.selectUserByPhoneNo(phoneNo);
 		if( user != null )
-			throw new AtsCustomException("Email Exsit");
+			throw new UserPhoneDuplicationException(phoneNo);
 		
 		//check Authentication already 
-		verifyRepository.deleteVerify(email);
+		verifyRepository.deleteVerify(phoneNo);
 		
 		//insertVerify
 		boolean result = false; 
 		while(!result) {
-			result = insertVerify(ATSVerify.builder().authenticationKey(randomNumber).email(email).build());
+			result = insertVerify(ATSVerify.builder().authenticationKey(randomNumber).phoneNo(phoneNo).build());
 		}
 		
-		return sendAuthMail(email, randomNumber); 
+//		return result; 
+		return randomNumber; 
+	}
+	
+	
+//	public boolean verifyForPassword(ATSUserSignIn verify) throws AtsCustomException {
+	public String verifyForPassword(ATSUserSignIn verify) throws AtsCustomException {
+		
+		int key = new Random().nextInt(9999);;
+		String randomNumber = String.valueOf(key);
+		String phoneNo = verify.getCntryCode()+verify.getName();
+		
+		//CHECK ATS USER?
+		ATSUser user = userRepository.selectUserByPhoneNo(phoneNo);
+		if(user == null) {
+			throw new AtsCustomException("Can't found user", HttpStatus.BAD_REQUEST);
+		}
+//		//BLOCK 10 MIN REQUEST
+//		boolean isAlready = verifyRepository.selectVerifyByPhoneForLimitRquest(phoneNo);
+//		if(isAlready) {
+//			throw new AtsCustomException("Already have Authentication, check you'r message, try again after 10 mins", HttpStatus.BAD_REQUEST);		}
+		
+		//check Authentication already 
+		verifyRepository.deleteVerify(phoneNo);
+		
+		//insertVerify
+		boolean result = false; 
+		while(!result) {
+			result = insertVerify(ATSVerify.builder().authenticationKey(randomNumber).phoneNo(phoneNo).build());
+		}
+		
+//		return result; 
+		return randomNumber; 
 	}
     
 	
@@ -126,7 +194,7 @@ public class AuthenticationService {
 			
 			Content subjectContent = new Content("UPAY Authentication Service");
 			Content bodyContent = new Content(mailTemplate.authMailTemplate(email,randomNumber));
-			Body body = new Body().withText(bodyContent);
+			Body body = new Body().withHtml(bodyContent);
 			Destination destination = new Destination(Arrays.asList(email));
 			Message message = new Message(subjectContent, body);
 			SendEmailRequest request = new SendEmailRequest()

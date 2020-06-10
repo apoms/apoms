@@ -25,6 +25,7 @@ import io.aetherit.ats.ws.exception.CanNotFoundUserTypeException;
 import io.aetherit.ats.ws.exception.CanNotFoundWalletException;
 import io.aetherit.ats.ws.exception.ErrorCode;
 import io.aetherit.ats.ws.exception.ErrorResponse;
+import io.aetherit.ats.ws.exception.UserPhoneDuplicationException;
 
 @ControllerAdvice
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
@@ -81,6 +82,14 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(CanNotFoundUserTypeException.class)
     public ResponseEntity<ErrorResponse> handleCanNotFoundUserTypeException(HttpServletRequest httpRequest, CanNotFoundUserTypeException ex) {
         final HttpStatus status = HttpStatus.BAD_REQUEST;
+        final ErrorResponse response = getErrorResponse(ex, httpRequest, status);
+
+        return new ResponseEntity<>(response, status);
+    }
+    
+    @ExceptionHandler(UserPhoneDuplicationException.class)
+    public ResponseEntity<ErrorResponse> handleUserPhoneDuplicationException(HttpServletRequest httpRequest, UserPhoneDuplicationException ex) {
+        final HttpStatus status = HttpStatus.CONFLICT;
         final ErrorResponse response = getErrorResponse(ex, httpRequest, status);
 
         return new ResponseEntity<>(response, status);

@@ -33,26 +33,38 @@
 		FROM   ats_live_room
     </select>
     
+    <select id="selectLiveRoom" parameterType="java.util.HashMap" resultMap="liveRoomResultMap">
+        SELECT room_id,
+			   user_id,
+			   type_code,
+			   status_code,
+			   thumnail_url,
+			   reg_dt
+		FROM   ats_live_room
+		WHERE  1 = 1
+		<if test="roomId!=null ">
+		AND    room_id = #{roomId}
+		</if>
+        <if test="userId!=null ">
+		AND    user_id = #{userId}
+		</if>
+    </select>
     
-    <insert id="insertLiveRoom" parameterType="ATSLiveRoom">
-		INSERT INTO ats_live_room 
-        (
-        	room_id,
-		    user_id,
-		    type_code,
-		    status_code,
-		    thumnail_url,
-		    reg_dt
-        )
-        VALUES 
-        (
-            #{roomId},
-            #{userId},
-            #{typeCode},
-            #{statusCode},
-            #{thumnailUrl},
-            NOW()
-        )
+    
+    <insert id="patchLiveRoom" parameterType="ATSLiveRoomPatch">
+		UPDATE ats_live_room
+		<set>
+	      <if test="typeCode != null">
+	           type_code = #{typeCode},
+	      </if>
+	      <if test="statusCode != null">
+	           status_code = #{statusCode},
+	      </if>
+	      <if test="thumnailUrl != null">
+	           "thumnail_url != null" = #{"thumnailUrl != null"},
+	      </if>
+	    </set>
+        where  room_id = #{roomId}
     </insert>
     
     <select id="selectWebrtcServer" resultMap="liveRoomResultMap">
@@ -102,6 +114,27 @@
         )
         ON DUPLICATE KEY UPDATE room_id=#{roomId}, server_id=#{serverId}
     </insert>
+    
+    
+    <insert id="insertLiveRoomUserHst" parameterType="ATSServerRoom">
+		INSERT INTO ats_live_room_user_hst 
+        (
+        	room_user_history_id,
+		    room_id,
+		    user_id,
+		    type_code,
+		    reg_dt
+        )
+        VALUES 
+        (
+            #{roomUserHistoryId},
+            #{roomId},
+        	#{userId},
+        	#{typeCode},
+            NOW()
+        )
+    </insert>
+    
     
     
 </mapper>

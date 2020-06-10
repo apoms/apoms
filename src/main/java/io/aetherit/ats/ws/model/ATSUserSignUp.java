@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ATSUserSignUp {
     private ATSUser user;
-    private String emailVerificationCode;
+    private String verificationCode;
 }

@@ -3,18 +3,18 @@
 
 
 	<!--  isAlready verify check -->
-	<select id="selectVerifyByEmail" resultType="boolean" parameterType="String">
+	<select id="selectVerifyByEPhone" resultType="boolean" parameterType="String">
         SELECT IF(COUNT(*) > 0 , TRUE , FALSE)
         FROM ats_authentication 
-        WHERE email = #{email} 
+        WHERE phone_no = #{phoneNo} 
     </select>
     
 	<!--  isAlready verify check for Limit Request-->
-	<select id="selectVerifyByEmailForLimitRquest" resultType="boolean" parameterType="String">
+	<select id="selectVerifyByPhoneForLimitRquest" resultType="boolean" parameterType="String">
         SELECT IF(COUNT(*) > 0 , TRUE , FALSE)
         FROM ats_authentication 
         WHERE 
-        	email = #{email}
+        	phone_no = #{phoneNo} 
         	AND	DATE_ADD(created_datetime, INTERVAL 10 MINUTE) > NOW() 
 	     
     </select>
@@ -24,8 +24,8 @@
         SELECT IF(COUNT(*) > 0 , TRUE , FALSE)
         FROM ats_authentication 
         WHERE 
-        	expire_datetime > UTC_TIMESTAMP() 
-     		AND email = #{email} 
+        	expire_datetime > NOW() 
+     		AND phone_no = #{phoneNo} 
        		AND authentication_key = #{authenticationKey}
     </select>
 	
@@ -33,12 +33,12 @@
 	<insert id="insertVerify" parameterType="ATSVerify">
 		INSERT INTO ats_authentication ( 
 					authentication_key,
-					email,
+					phone_no,
 					expire_datetime,
 					created_datetime 
 				) VALUES (
 					#{authenticationKey},
-					#{email},
+					#{phoneNo},
 					DATE_ADD(NOW(), INTERVAL 1 DAY),
 					NOW())
 	</insert>
@@ -46,7 +46,7 @@
     <!-- DELETE -->
     <delete id="deleteVerify">
           DELETE FROM ats_authentication
-          WHERE email=#{email}
+          WHERE phone_no=#{phoneNo}
     </delete>
 
 </mapper>

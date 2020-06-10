@@ -1,4 +1,4 @@
-package io.aetherit.ats.ws.model.main;
+package io.aetherit.ats.ws.model.common;
 
 import java.util.List;
 

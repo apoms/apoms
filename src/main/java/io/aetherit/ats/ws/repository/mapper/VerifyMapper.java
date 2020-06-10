@@ -5,10 +5,10 @@ import io.aetherit.ats.ws.model.ATSVerify;
 public interface VerifyMapper {
 	
 	int insertVerify(ATSVerify verify);
-    boolean selectVerifyByEmail(String email);
-    boolean selectVerifyByEmailForLimitRquest(String email);
+    boolean selectVerifyByPhone(String phone);
+    boolean selectVerifyByPhoneForLimitRquest(String phone);
     boolean checkVerify(ATSVerify verify);
-    int deleteVerify(String email);
+    int deleteVerify(String phone);
     
 	
 }

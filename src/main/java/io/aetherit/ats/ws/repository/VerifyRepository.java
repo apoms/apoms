@@ -20,17 +20,17 @@ public class VerifyRepository {
     public int insertVerify(ATSVerify verify){
     	return mapper.insertVerify(verify);
     }
-    public boolean selectVerifyByEmail(String email) {
-    	return mapper.selectVerifyByEmail(email);
+    public boolean selectVerifyByEPhone(String phoneNo) {
+    	return mapper.selectVerifyByPhone(phoneNo);
     }
-    public boolean selectVerifyByEmailForLimitRquest(String email) {
-    	return mapper.selectVerifyByEmailForLimitRquest(email);
+    public boolean selectVerifyByPhoneForLimitRquest(String phoneNo) {
+    	return mapper.selectVerifyByPhoneForLimitRquest(phoneNo);
     }
     public boolean checkVerify(ATSVerify verify){
     	return mapper.checkVerify(verify);
     }
-    public int deleteVerify(String email){
-    	return mapper.deleteVerify(email);
+    public int deleteVerify(String phoneNo){
+    	return mapper.deleteVerify(phoneNo);
     }
     
 }

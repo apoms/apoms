@@ -1,0 +1,44 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.aetherit.ats.ws.repository.mapper.AdminMapper">
+<!--     <resultMap id="userResultMap" type="ATSUser"> -->
+<!--         <id property="userId"                       column="user_id" /> -->
+<!--         <result property="password"             	column="pwd" /> -->
+<!--         <result property="nickName"                 column="nick_name" /> -->
+<!--         <result property="cntryCode"                 column="cntry_code" /> -->
+<!--         <result property="phoneNo"             		column="phone_no" /> -->
+<!--         <result property="type"                 	column="user_type" /> -->
+<!--         <result property="statusCode"               column="status_code" /> -->
+<!--         <result property="regDt"      				column="reg_dt" /> -->
+<!--         <result property="modDt"      				column="mod_dt" /> -->
+<!--     </resultMap> -->
+
+    
+    <update id="approvalUserTypeAnchor" parameterType="java.util.HashMap">
+    	UPDATE user_bas
+    	SET	   status_code = #{userStatus},
+    		   mod_dt = NOW()
+		WHERE  user_id = #{userId}
+		;
+		
+		INSERT INTO ats_live_room 
+        (
+        	room_id,
+        	user_id,
+       	    type_code,
+       	    status_code,
+            reg_dt
+        )
+        VALUES 
+        (
+            #{roomId},
+            #{userId},
+            #{typeCode},
+            #{statusCode},
+            NOW()
+        )
+        ;
+    </update>
+    
+    
+    
+</mapper>

@@ -18,6 +18,9 @@ import org.springframework.util.Assert;
 
 import io.aetherit.ats.ws.model.ATSSimpleUser;
 import io.aetherit.ats.ws.model.ATSUser;
+import io.aetherit.ats.ws.model.ATSUserSignIn;
+import io.aetherit.ats.ws.model.type.ATSUserStatus;
+import io.aetherit.ats.ws.model.type.ATSUserType;
 
 @Component
 public class UserAuthenticationProvider implements AuthenticationProvider {
@@ -35,12 +38,12 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
         Assert.isInstanceOf(UsernamePasswordAuthenticationToken.class, request, "Only UsernamePasswordAuthenticationToken is supported");
 
         UsernamePasswordAuthenticationToken result = null;
-        final String email = (String) request.getPrincipal();
+        final String phoneNo = (String) request.getPrincipal();
         final String password = (String) request.getCredentials();
         
-        final ATSUser user = userService.getUserByEmail(email);
+        final ATSUser user = userService.getUserByPhoneNo(phoneNo);
         if(user == null) {
-            throw new UsernameNotFoundException("User not found : " + email);
+            throw new UsernameNotFoundException("User not found : " + phoneNo);
         }
         
         String userPassword = user.getPassword();
@@ -49,8 +52,39 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
             final List<GrantedAuthority> authorities = new ArrayList<>();
             authorities.add(new SimpleGrantedAuthority(user.getType().name()));
 
-            result = new UsernamePasswordAuthenticationToken(email, password, authorities);
+            result = new UsernamePasswordAuthenticationToken(phoneNo, password, authorities);
             result.setDetails(getSimpleUser(user));
+        } else {
+            throw new BadCredentialsException("Bad credentials");
+        }
+        return result;
+    }
+    
+    public Authentication anoymousAuthenticate(Authentication request,String passwd) throws AuthenticationException {
+        Assert.isInstanceOf(UsernamePasswordAuthenticationToken.class, request, "Only UsernamePasswordAuthenticationToken is supported");
+
+        UsernamePasswordAuthenticationToken result = null;
+        final String phoneNo = (String) request.getPrincipal();
+        final String password = (String) request.getCredentials();
+        
+        final ATSUser user = ATSUser.builder()
+        							.cntryCode("+86")
+        							.phoneNo("00000000000")
+        							.nickName("anoymous")
+        							.type(ATSUserType.ANOYMOUS)
+        							.userId(0)
+        							.statusCode(ATSUserStatus.NORMAL)
+        							.password(passwordEncoder.encode(passwd))
+        							.build();
+        
+        String userPassword = user.getPassword();
+        
+        if ((password != null) && (password.length() > 0) && (passwordEncoder.matches(password, userPassword))) {
+	        final List<GrantedAuthority> authorities = new ArrayList<>();
+	        authorities.add(new SimpleGrantedAuthority(user.getType().name()));
+	
+	        result = new UsernamePasswordAuthenticationToken(phoneNo, password, authorities);
+	        result.setDetails(getSimpleUser(user));
         } else {
             throw new BadCredentialsException("Bad credentials");
         }
@@ -65,8 +99,9 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
     private ATSSimpleUser getSimpleUser(ATSUser user) {
         return ATSSimpleUser.builder()
         		.userId(user.getUserId())
-        		.phoneNo(user.getPhoneNo())
-        		.email(user.getEmail())
+        		.phoneNo(user.getCntryCode()+user.getPhoneNo())
+        		.nickName(user.getNickName())
+        		.type(user.getType())
         		.regDt(user.getRegDt())
         		.modDt(user.getModDt())
         		.build();

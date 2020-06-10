@@ -11,7 +11,6 @@
         <typeAlias type="io.aetherit.ats.ws.model.ATSUser" alias="ATSUser" />
         <typeAlias type="io.aetherit.ats.ws.model.type.ATSUserType" alias="ATSUserType" />
         
-        
         <typeAlias type="io.aetherit.ats.ws.model.dao.ATSAdvertisiong" alias="ATSAdvertisiong" />
         <typeAlias type="io.aetherit.ats.ws.model.dao.ATSMovieTagDtl" alias="ATSMovieTagDtl" />
         <typeAlias type="io.aetherit.ats.ws.model.dao.ATSMovieChannelCtg" alias="ATSMovieChannelCtg" />
@@ -20,9 +19,15 @@
         <typeAlias type="io.aetherit.ats.ws.model.dao.ATSMovieCoverImage" alias="ATSMovieCoverImage" />
         <typeAlias type="io.aetherit.ats.ws.model.dao.ATSMovieSearchTxn" alias="ATSMovieSearchTxn" />
         <typeAlias type="io.aetherit.ats.ws.model.dao.ATSMovieReactionTxn" alias="ATSMovieReactionTxn" />
+        <typeAlias type="io.aetherit.ats.ws.model.dao.ATSMovieHst" alias="ATSMovieHst" />
         <typeAlias type="io.aetherit.ats.ws.model.dao.ATSLiveRoom" alias="ATSLiveRoom" />
+        <typeAlias type="io.aetherit.ats.ws.model.dao.ATSLiveRoomUserHst" alias="ATSLiveRoomUserHst" />
         <typeAlias type="io.aetherit.ats.ws.model.dao.ATSWebrtcServer" alias="ATSWebrtcServer" />
         <typeAlias type="io.aetherit.ats.ws.model.dao.ATSServerRoom" alias="ATSServerRoom" />
+        
+        <typeAlias type="io.aetherit.ats.ws.model.live.ATSLiveRoomPatch" alias="ATSLiveRoomPatch" />
+        
+        <typeAlias type="io.aetherit.ats.ws.model.common.ATSFollower" alias="ATSFollower" />
         
         <typeAlias type="io.aetherit.ats.ws.model.ATSVerify" alias="ATSVerify" />
 
@@ -38,5 +43,6 @@
         <mapper resource="mybatis/mapper/RankingMapper.xml" />
         <mapper resource="mybatis/mapper/LiveRoomMapper.xml" />
         <mapper resource="mybatis/mapper/VerifyMapper.xml" />
+        <mapper resource="mybatis/mapper/AdminMapper.xml" />
     </mappers>
 </configuration>

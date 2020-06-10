@@ -17,6 +17,7 @@ import io.aetherit.ats.ws.util.AES256Util;
 import io.aetherit.ats.ws.util.CommonUtil;
 import io.aetherit.ats.ws.util.JsonControllerUtil;
 import io.aetherit.ats.ws.util.JsonUtil;
+import io.aetherit.ats.ws.util.JwtTokenUtil;
 import io.aetherit.ats.ws.util.MailTemplate;
 import io.aetherit.ats.ws.util.SystemEnvUtil;
 
@@ -74,6 +75,11 @@ public class ApplicationConfiguration {
     @Bean
     public CommonUtil commonUtil() {
         return new CommonUtil();
+    }
+    
+    @Bean
+    public JwtTokenUtil jwtTokenUtil() {
+    	return new JwtTokenUtil();
     }
     
     @Bean

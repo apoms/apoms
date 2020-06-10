@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import io.aetherit.ats.ws.model.dao.ATSMovieActorBas;
 import io.aetherit.ats.ws.model.dao.ATSMovieBas;
 import io.aetherit.ats.ws.model.dao.ATSMovieCoverImage;
+import io.aetherit.ats.ws.model.dao.ATSMovieHst;
 import io.aetherit.ats.ws.model.dao.ATSMovieReactionTxn;
 import io.aetherit.ats.ws.model.dao.ATSMovieTagDtl;
 import io.aetherit.ats.ws.repository.mapper.MovieMapper;
@@ -114,6 +115,10 @@ public class MovieRepository {
     
     public int updateMovieBasDown(int movId) {
     	return movieMapper.updateMovieBasDown(movId);
+    }
+    
+    public int insertMovieHst(ATSMovieHst movieHst) {
+    	return movieMapper.insertMovieHst(movieHst);
     }
     
 }

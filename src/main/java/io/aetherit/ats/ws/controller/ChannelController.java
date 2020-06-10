@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.aetherit.ats.ws.model.ATSResultSet;
 import io.aetherit.ats.ws.model.ATSReturnSet;
+import io.aetherit.ats.ws.model.common.ATSSelection;
 import io.aetherit.ats.ws.model.dao.ATSMovieChannelCtg;
-import io.aetherit.ats.ws.model.main.ATSSelection;
 import io.aetherit.ats.ws.model.type.ATSLangCode;
 import io.aetherit.ats.ws.service.ChannelService;
 

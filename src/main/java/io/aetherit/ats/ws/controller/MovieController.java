@@ -2,6 +2,7 @@ package io.aetherit.ats.ws.controller;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,14 +26,17 @@ import io.aetherit.ats.ws.model.ATSReturnSet;
 import io.aetherit.ats.ws.model.ATSSimpleUser;
 import io.aetherit.ats.ws.model.actor.ATSActor;
 import io.aetherit.ats.ws.model.actor.ATSActorDetail;
-import io.aetherit.ats.ws.model.main.ATSCombine;
+import io.aetherit.ats.ws.model.common.ATSCombine;
+import io.aetherit.ats.ws.model.dao.ATSMovieHst;
 import io.aetherit.ats.ws.model.movie.ATSActorMovie;
 import io.aetherit.ats.ws.model.movie.ATSMovie;
 import io.aetherit.ats.ws.model.movie.ATSMovieBrowse;
 import io.aetherit.ats.ws.model.movie.ATSNewMovie;
 import io.aetherit.ats.ws.model.type.ATSLangCode;
+import io.aetherit.ats.ws.model.type.ATSUserType;
 import io.aetherit.ats.ws.service.AuthenticationService;
 import io.aetherit.ats.ws.service.MovieService;
+import io.aetherit.ats.ws.service.UserService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 
@@ -40,11 +46,15 @@ public class MovieController {
 	private static final Logger logger = LoggerFactory.getLogger(MovieController.class);
 	
 	private MovieService movieService;
+	private UserService userService;
 	private AuthenticationService authenticationService;
 	
     @Autowired
-    public MovieController(MovieService movieService, AuthenticationService authenticationService) {
+    public MovieController(MovieService movieService, 
+			    		   UserService userService,
+			    		   AuthenticationService authenticationService) {
         this.movieService = movieService;
+        this.userService = userService;
         this.authenticationService = authenticationService;
     }
     
@@ -364,6 +374,26 @@ public class MovieController {
     	
     	movieService.setMovieDown(map, user.getUserId());
     	return new ResponseEntity<>(HttpStatus.OK);
+    }
+    
+    
+/**
+ * Movie Access log 
+ * @param httpRequest
+ * @param langCd
+ * @param movieHist
+ * @return
+ */
+    @PutMapping("/movie/view")
+    public ResponseEntity<Void> setMovieAccess(HttpServletRequest httpRequest, @RequestHeader(value="lang-code") ATSLangCode langCd, @RequestBody ATSMovieHst movieHist) {
+    	if(!Objects.isNull(movieHist.getUserId()) && movieHist.getUserId()!=0) {
+    		movieHist.setTypeCode(userService.getUser(movieHist.getUserId()).getType());
+    	}else {
+    		movieHist.setTypeCode(ATSUserType.ANOYMOUS);
+    	}
+    	movieService.setMovieAccess(movieHist);
+         
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 	
 }

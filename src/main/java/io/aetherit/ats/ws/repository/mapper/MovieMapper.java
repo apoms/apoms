@@ -6,6 +6,7 @@ import java.util.List;
 import io.aetherit.ats.ws.model.dao.ATSMovieActorBas;
 import io.aetherit.ats.ws.model.dao.ATSMovieBas;
 import io.aetherit.ats.ws.model.dao.ATSMovieCoverImage;
+import io.aetherit.ats.ws.model.dao.ATSMovieHst;
 import io.aetherit.ats.ws.model.dao.ATSMovieReactionTxn;
 import io.aetherit.ats.ws.model.dao.ATSMovieTagDtl;
 
@@ -39,4 +40,6 @@ public interface MovieMapper {
 	int updateMovieBasUp(int movId);
 	int insertMovieReactionTxnDown(ATSMovieReactionTxn movieReaction);
 	int updateMovieBasDown(int movId);
+	
+	int insertMovieHst(ATSMovieHst movieHst);
 }

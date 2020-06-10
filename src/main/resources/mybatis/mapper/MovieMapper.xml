@@ -149,9 +149,9 @@
     <select id="selectRecommendActorList" parameterType="java.util.HashMap" resultMap="ActorResultMap">
         SELECT actor_idx,
 			   actor_name,
-			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','chn',actor_idx) AS actor_name_cn,
-			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','eng',actor_idx) AS actor_name_en,
-			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','jpn',actor_idx) AS actor_name_jp,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','CHN',actor_idx) AS actor_name_cn,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','ENG',actor_idx) AS actor_name_en,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','JPN',actor_idx) AS actor_name_jp,
 			   briefIntroduction,
 			   photo_domain,
 			   photo_url,
@@ -415,9 +415,9 @@
     <select id="selectNewTopActorList" parameterType="java.util.HashMap" resultMap="ActorResultMap">
         SELECT actor_idx,
 			   actor_name,
-			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','chn',actor_idx) AS actor_name_cn,
-			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','eng',actor_idx) AS actor_name_en,
-			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','jpg',actor_idx) AS actor_name_jp,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','CHN',actor_idx) AS actor_name_cn,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','ENG',actor_idx) AS actor_name_en,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','JPG',actor_idx) AS actor_name_jp,
 			   briefIntroduction,
 			   photo_domain,
 			   photo_url,
@@ -615,9 +615,9 @@
     <select id="selectActorDetail" parameterType="java.util.HashMap" resultMap="ActorResultMap">
         SELECT actor_idx,
 			   actor_name,
-			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','chn',actor_idx) AS actor_name_cn,
-			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','eng',actor_idx) AS actor_name_en,
-			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','jpn',actor_idx) AS actor_name_jp,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','CHN',actor_idx) AS actor_name_cn,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','ENG',actor_idx) AS actor_name_en,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','JPN',actor_idx) AS actor_name_jp,
 			   briefIntroduction,
 			   photo_domain,
 			   photo_url,
@@ -640,9 +640,9 @@
     <select id="selectMovieActorList" parameterType="java.util.HashMap" resultMap="ActorResultMap">
         SELECT actor.actor_idx,
 			   actor.actor_name,
-			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','chn',actor.actor_idx) AS actor_name_cn,
-			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','eng',actor.actor_idx) AS actor_name_en,
-			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','jpn',actor.actor_idx) AS actor_name_jp,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','CHN',actor.actor_idx) AS actor_name_cn,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','ENG',actor.actor_idx) AS actor_name_en,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','JPN',actor.actor_idx) AS actor_name_jp,
 			   actor.briefIntroduction,
 			   actor.photo_domain,
 			   actor.photo_url,
@@ -799,5 +799,24 @@
         WHERE   mov_Id = #{movId}
     </update>
     
+    
+    <insert id="insertMovieHst" parameterType="ATSMovieHst">
+		INSERT INTO movie_hst 
+        (
+        	hst_idx,
+		    mov_id,
+		    user_id,
+		    type_code,
+		    reg_dt
+        )
+        VALUES 
+        (
+            #{hstIdx},
+            #{movId},
+        	#{userId},
+        	#{typeCode},
+            NOW()
+        )
+    </insert>
     
 </mapper>

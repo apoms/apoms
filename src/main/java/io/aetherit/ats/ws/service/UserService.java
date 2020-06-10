@@ -1,6 +1,5 @@
 package io.aetherit.ats.ws.service;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,10 +14,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import io.aetherit.ats.ws.exception.AtsCustomException;
+import io.aetherit.ats.ws.exception.CanNotFoundUserException;
 import io.aetherit.ats.ws.exception.NotAcceptableIdException;
 import io.aetherit.ats.ws.model.ATSUser;
 import io.aetherit.ats.ws.model.ATSUserSignUp;
 import io.aetherit.ats.ws.model.ATSVerify;
+import io.aetherit.ats.ws.model.common.ATSFollower;
+import io.aetherit.ats.ws.model.type.ATSUserStatus;
 import io.aetherit.ats.ws.model.type.ATSUserType;
 import io.aetherit.ats.ws.repository.UserRepository;
 
@@ -26,10 +28,11 @@ import io.aetherit.ats.ws.repository.UserRepository;
 public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-//    private static final String DEFAULT_ADMIN_ID = "admin";
+    
     private static final long DEFAULT_ADMIN_ID = 999999999;
+    private static final String DEFAULT_NICK_NAME = "admin";
     private static final String DEFAULT_ADMIN_PASSWORD = "1234";
-    private static final String DEFAULT_ADMIN_EMAIL = "admin@ats.ws";
+    private static final String DEFAULT_ADMIN_CNTRY_CODE = "+82";
     private static final String DEFAULT_PHONE_NO = "00099990000";
     private static final Map<String, Boolean> notAcceptableIdMap = new HashMap<>();
     static {
@@ -55,7 +58,12 @@ public class UserService {
 
     @PostConstruct
     public void checkAdmin() {
-        final List<ATSUser> users = getUsers(ATSUserType.ADMIN);
+    	
+    	HashMap<String,Object> map = new HashMap<String,Object>();
+    	map.put("type", ATSUserType.ADMIN);
+    	map.put("statusCode", "");
+    	
+        final List<ATSUser> users = getUsers(map);
 
         if((users == null) || (users.size() < 1)) {
             logger.info("Admin account not exists : create a default admin account");
@@ -63,35 +71,67 @@ public class UserService {
             final ATSUser newAdmin = ATSUser.builder()
                     .userId(DEFAULT_ADMIN_ID)
                     .password(DEFAULT_ADMIN_PASSWORD)
-                    .email(DEFAULT_ADMIN_EMAIL)
+                    .nickName(DEFAULT_NICK_NAME)
+                    .cntryCode(DEFAULT_ADMIN_CNTRY_CODE)
                     .phoneNo(DEFAULT_PHONE_NO)
                     .type(ATSUserType.ADMIN)
+                    .statusCode(ATSUserStatus.NORMAL)
                     .build();
 
-            createNewUser(ATSUserSignUp.builder().user(newAdmin).emailVerificationCode("999999").build());
+            createNewUser(ATSUserSignUp.builder().user(newAdmin).verificationCode("9999").build());
         }
     }
 
-    public ATSUser getUser(String id) {
+    /**
+     * get user info 
+     * @param id
+     * @return
+     */
+    public ATSUser getUser(long id) {
         return repository.selectUser(id);
     }
 
-    public List<ATSUser> getUsers(ATSUserType type) {
-        return repository.selectUsers(type);
+    /**
+     * user List by type
+     * @param type
+     * @return
+     */
+    public List<ATSUser> getUsers(HashMap<String,Object> map) {
+        return repository.selectUsers(map);
     }
     
+    /**
+     * user by email
+     * @param email
+     * @return
+     */
     public ATSUser getUserByEmail(String email) {
         return repository.selectUserByEmail(email);
     }
     
+    /**
+     * user by phone no
+     * @param phoneNo
+     * @return
+     */
     public ATSUser getUserByPhoneNo(String phoneNo) {
     	return repository.selectUserByPhoneNo(phoneNo);
     }
 
+    /**
+     * create new user
+     * @param userSignUp
+     * @return
+     */
     public ATSUser createNewUser(ATSUserSignUp userSignUp) {
     	
     	ATSUser user = userSignUp.getUser();
-		ATSVerify verify = ATSVerify.builder().email(user.getEmail()).authenticationKey(userSignUp.getEmailVerificationCode()).build();
+    	String verifyPhoneNo = user.getCntryCode()+user.getPhoneNo();
+    	
+		ATSVerify verify = ATSVerify.builder()
+									.phoneNo(verifyPhoneNo)
+									.authenticationKey(userSignUp.getVerificationCode())
+									.build();
 
 		if(isNotAcceptableId(user.getUserId()+"")) {
             throw new NotAcceptableIdException(user.getUserId()+"");
@@ -105,7 +145,7 @@ public class UserService {
 			}
 			
 			//CHECK USER ALREADY REGIST
-			ATSUser checkUser = repository.selectUserByEmail(user.getEmail());
+			ATSUser checkUser = repository.selectUserByPhoneNo(user.getCntryCode()+user.getPhoneNo());
 			if(checkUser != null ) {
 				throw new AtsCustomException("User Already", HttpStatus.BAD_REQUEST);
 			}
@@ -116,13 +156,47 @@ public class UserService {
 		repository.insertUser(user);
 		
 		try {
-			verifyService.deleteVerify(user.getEmail());
+			verifyService.deleteVerify(user.getPhoneNo());
 		}catch(Exception e) {
 			throw new AtsCustomException(e.getLocalizedMessage());
 		}
 		return user; 
     }
-
+    
+    /**
+     * request user type update to anchor
+     * @param id
+     * @return
+     */
+    public ATSUser setUserTypeAnchor(long id) {
+    	ATSUser user = repository.selectUser(id);
+    	if(user==null) {
+    		throw new CanNotFoundUserException(id+"");
+    	}
+    	
+    	user.setType(ATSUserType.ANCHOR);
+    	user.setStatusCode(ATSUserStatus.WAIT);
+    	
+    	repository.updateUserTypeAnchor(user);
+    	user.setPassword("");
+    	return user;
+    }
+    
+    public List<ATSFollower> getFollowerList(long userId) {
+    	return repository.selectFollowerList(userId);
+    }
+    
+    public List<ATSFollower> getFollowingList(long userId) {
+    	return repository.selectFollowingList(userId);
+    }
+    
+    
+    
+    /**
+     * acceptable check
+     * @param id
+     * @return
+     */
     private boolean isNotAcceptableId(String id) {
         boolean isNotAcceptable = false;
 
@@ -132,4 +206,5 @@ public class UserService {
 
         return isNotAcceptable;
     }
+    
 }

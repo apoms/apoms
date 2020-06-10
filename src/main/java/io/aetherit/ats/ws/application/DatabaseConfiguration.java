@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.zaxxer.hikari.HikariDataSource;
 
 import io.aetherit.ats.ws.application.support.DatabaseProperties;
+import io.aetherit.ats.ws.repository.mapper.AdminMapper;
 import io.aetherit.ats.ws.repository.mapper.AdvertisingMapper;
 import io.aetherit.ats.ws.repository.mapper.ChannelMapper;
 import io.aetherit.ats.ws.repository.mapper.LiveRoomMapper;
@@ -142,6 +143,13 @@ public class DatabaseConfiguration {
     @Bean
     public MapperFactoryBean<VerifyMapper> VerifyMapper(@Qualifier("psSqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
     	MapperFactoryBean<VerifyMapper> bean = new MapperFactoryBean<>(VerifyMapper.class);
+    	bean.setSqlSessionFactory(sqlSessionFactory);
+    	return bean;
+    }
+    
+    @Bean
+    public MapperFactoryBean<AdminMapper> AdminMapper(@Qualifier("psSqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
+    	MapperFactoryBean<AdminMapper> bean = new MapperFactoryBean<>(AdminMapper.class);
     	bean.setSqlSessionFactory(sqlSessionFactory);
     	return bean;
     }

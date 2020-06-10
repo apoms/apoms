@@ -14,12 +14,11 @@ import io.aetherit.ats.ws.model.actor.ATSActor;
 import io.aetherit.ats.ws.model.actor.ATSActorDTO;
 import io.aetherit.ats.ws.model.actor.ATSActorDetail;
 import io.aetherit.ats.ws.model.actor.ATSSimpleActor;
+import io.aetherit.ats.ws.model.common.ATSCombine;
 import io.aetherit.ats.ws.model.dao.ATSMovieActorBas;
 import io.aetherit.ats.ws.model.dao.ATSMovieBas;
-import io.aetherit.ats.ws.model.dao.ATSMovieCoverImage;
+import io.aetherit.ats.ws.model.dao.ATSMovieHst;
 import io.aetherit.ats.ws.model.dao.ATSMovieReactionTxn;
-import io.aetherit.ats.ws.model.dao.ATSMovieTagDtl;
-import io.aetherit.ats.ws.model.main.ATSCombine;
 import io.aetherit.ats.ws.model.movie.ATSActorMovie;
 import io.aetherit.ats.ws.model.movie.ATSCover;
 import io.aetherit.ats.ws.model.movie.ATSMovie;
@@ -1025,7 +1024,7 @@ public class MovieService {
     	ATSMovieReactionTxn movieReaction = ATSMovieReactionTxn.builder()
     														   .movId((int) map.get("movId"))
     														   .userId(userId)
-    														   .reactionType(ATSReactionType.up)
+    														   .reactionType(ATSReactionType.UP)
     														   .build();
     	
     	movieRepository.insertMovieReactionTxnUp(movieReaction);
@@ -1037,9 +1036,15 @@ public class MovieService {
     	ATSMovieReactionTxn movieReaction = ATSMovieReactionTxn.builder()
 															   .movId((int) map.get("movId"))
 															   .userId(userId)
-															   .reactionType(ATSReactionType.down)
+															   .reactionType(ATSReactionType.DOWN)
 															   .build();
     	movieRepository.insertMovieReactionTxnDown(movieReaction);
     	movieRepository.updateMovieBasDown(movieReaction.getMovId());
+    }
+    
+    
+    @Transactional
+    public void setMovieAccess(ATSMovieHst movieHst) {
+    	movieRepository.insertMovieHst(movieHst);
     }
 }

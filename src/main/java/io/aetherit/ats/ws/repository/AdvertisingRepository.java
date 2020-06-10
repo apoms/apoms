@@ -17,8 +17,8 @@ public class AdvertisingRepository {
         this.advertisingMapper = advertisingMapper;
     }
 
-    public List<ATSAdvertisiong> selectAdsList(int location) {
-        return advertisingMapper.selectAdsList(location);
+    public List<ATSAdvertisiong> selectAdsList(String langCd) {
+        return advertisingMapper.selectAdsList(langCd);
     }
 }
 

@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.aetherit.ats.ws.model.common.ATSAds;
+import io.aetherit.ats.ws.model.common.ATSBanner;
 import io.aetherit.ats.ws.model.dao.ATSAdvertisiong;
-import io.aetherit.ats.ws.model.main.ATSAds;
-import io.aetherit.ats.ws.model.main.ATSBanner;
 import io.aetherit.ats.ws.repository.AdvertisingRepository;
 
 @Service
@@ -30,9 +30,9 @@ public class AdvertisingService {
      * @param userId
      * @return
      */
-    public List<ATSBanner> getBannerList(int location) {
+    public List<ATSBanner> getBannerList(String langCd) {
     	List<ATSBanner> bannerList = new ArrayList<ATSBanner>();
-    	List<ATSAdvertisiong> advertisingList = advertisingRepository.selectAdsList(location);
+    	List<ATSAdvertisiong> advertisingList = advertisingRepository.selectAdsList(langCd);
     	
     	for(int i=1;i<=10;i++) {
     		List<ATSAds> ads = new ArrayList<ATSAds>();

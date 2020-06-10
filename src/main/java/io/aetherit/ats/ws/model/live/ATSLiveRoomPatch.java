@@ -1,6 +1,4 @@
-package io.aetherit.ats.ws.model.dao;
-
-import java.time.LocalDateTime;
+package io.aetherit.ats.ws.model.live;
 
 import io.aetherit.ats.ws.model.type.ATSLiveRoomStatus;
 import io.aetherit.ats.ws.model.type.ATSLiveRoomType;
@@ -13,12 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ATSLiveRoom {
+public class ATSLiveRoomPatch {
     private long roomId;
-    private long userId;
-    private String roomDesc;
     private ATSLiveRoomType typeCode;
     private ATSLiveRoomStatus statusCode;
     private String thumnailUrl;
-    private LocalDateTime regDt;
 }

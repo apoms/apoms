@@ -1,10 +1,8 @@
-package io.aetherit.ats.ws.model;
+package io.aetherit.ats.ws.model.common;
 
 import java.time.LocalDateTime;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
+import io.aetherit.ats.ws.model.type.ATSUserRelType;
 import io.aetherit.ats.ws.model.type.ATSUserStatus;
 import io.aetherit.ats.ws.model.type.ATSUserType;
 import lombok.AllArgsConstructor;
@@ -16,24 +14,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ATSUser {
-    private long userId;
-    
-    @NotNull
-    private String password;
-    @NotNull
+public class ATSFollower {
+    private String userId;
     private String nickName;
-    
-    @NotNull
-    @NotBlank(message = "Please enter your phone number.")
     private String cntryCode;
     private String phoneNo;
-    
-    @NotNull
-    private ATSUserType type;
+    private ATSUserType userType;
     private ATSUserStatus statusCode;
-    
+    private ATSUserRelType relType;
+    private LocalDateTime relDt;
     private LocalDateTime regDt;
     private LocalDateTime modDt;
-    
 }

@@ -517,9 +517,9 @@
     <select id="selectRankingActorList" parameterType="java.util.HashMap" resultMap="ActorResultMap">
         SELECT bas.actor_idx,
 			   bas.actor_name,
-			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','chn',bas.actor_idx) AS actor_name_cn,
-			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','eng',bas.actor_idx) AS actor_name_en,
-			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','jpn',bas.actor_idx) AS actor_name_jp,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','CHN',bas.actor_idx) AS actor_name_cn,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','ENG',bas.actor_idx) AS actor_name_en,
+			   FNC_LANG_CHANGE('movie_actor_bas','actor_name','JPN',bas.actor_idx) AS actor_name_jp,
 			   bas.briefIntroduction,
 			   bas.photo_domain,
 			   bas.photo_url,

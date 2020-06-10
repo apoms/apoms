@@ -5,5 +5,5 @@ import java.util.List;
 import io.aetherit.ats.ws.model.dao.ATSAdvertisiong;
 
 public interface AdvertisingMapper {
-	List<ATSAdvertisiong> selectAdsList(int location);
+	List<ATSAdvertisiong> selectAdsList(String langCd);
 }
