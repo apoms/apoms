@@ -62,12 +62,12 @@ public class AuthenticationService {
     }
     
     @SuppressWarnings("static-access")
-    public ATSUserToken getAnoymousToken(HttpSession session) {
+    public ATSUserToken getAnonymousToken(HttpSession session) {
     	final String cntryCode = "+86";
     	final String phoneNo = "01000000000000";
-    	final String passwd = "anoymous";
+    	final String passwd = "anonymous";
         final Authentication request = new UsernamePasswordAuthenticationToken(cntryCode+phoneNo, passwd);
-        final Authentication result = authenticationManager.anoymousAuthenticate(request,passwd);
+        final Authentication result = authenticationManager.anonymousAuthenticate(request,passwd);
         
         if ((result != null) && (result.isAuthenticated())) {
             SecurityContextHolder.getContext().setAuthentication(result);

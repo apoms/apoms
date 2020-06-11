@@ -133,6 +133,7 @@
         )
     </insert>
     
+    
     <update id="updateUserTypeAnchor" parameterType="ATSUser" >
     	UPDATE user_bas
     	SET	   user_type = #{type},
@@ -158,6 +159,7 @@
 		WHERE  bas.user_id = rel.rel_id
     </select>
     
+    
     <select id="selectFollowingList" resultMap="followerResultMap">
         SELECT bas.user_id,
 			   bas.nick_name,
@@ -173,5 +175,32 @@
 			   user_rel rel
 		WHERE  bas.user_id = rel.user_id
     </select>
+    
+    
+    <insert id="insertFollowing" parameterType="ATSUserRel" useGeneratedKeys="true" keyProperty="followIdx">
+        INSERT INTO user_rel 
+        (
+        	follow_idx,
+       	    user_id,
+       	    rel_id,
+       	    rel_type,
+    	    rel_dt
+        )
+        VALUES 
+        (
+            #{followIdx},
+            #{relId},
+            #{relId},
+            #{relType},
+            NOW()
+        )
+    </insert>
+
+    
+    <delete id="deleteFollowing" parameterType="int" >
+    	DELETE
+		FROM   user_rel
+		WHERE  follow_idx = #{followIdx}
+    </delete>
     
 </mapper>

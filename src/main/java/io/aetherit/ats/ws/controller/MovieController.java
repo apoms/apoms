@@ -389,7 +389,7 @@ public class MovieController {
     	if(!Objects.isNull(movieHist.getUserId()) && movieHist.getUserId()!=0) {
     		movieHist.setTypeCode(userService.getUser(movieHist.getUserId()).getType());
     	}else {
-    		movieHist.setTypeCode(ATSUserType.ANOYMOUS);
+    		movieHist.setTypeCode(ATSUserType.ANONYMOUS);
     	}
     	movieService.setMovieAccess(movieHist);
          

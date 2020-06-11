@@ -20,6 +20,7 @@ import io.aetherit.ats.ws.model.ATSUser;
 import io.aetherit.ats.ws.model.ATSUserSignUp;
 import io.aetherit.ats.ws.model.ATSVerify;
 import io.aetherit.ats.ws.model.common.ATSFollower;
+import io.aetherit.ats.ws.model.dao.ATSUserRel;
 import io.aetherit.ats.ws.model.type.ATSUserStatus;
 import io.aetherit.ats.ws.model.type.ATSUserType;
 import io.aetherit.ats.ws.repository.UserRepository;
@@ -188,6 +189,14 @@ public class UserService {
     
     public List<ATSFollower> getFollowingList(long userId) {
     	return repository.selectFollowingList(userId);
+    }
+    
+    public void setFollowing(ATSUserRel userRel) {
+    	repository.insertFollowing(userRel);
+    }
+    
+    public void deleteFollowing(int followIdx) {
+    	repository.deleteFollowing(followIdx);
     }
     
     

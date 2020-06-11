@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import io.aetherit.ats.ws.model.dao.ATSLiveGiftBas;
 import io.aetherit.ats.ws.model.dao.ATSLiveRoom;
 import io.aetherit.ats.ws.model.dao.ATSLiveRoomUserHst;
 import io.aetherit.ats.ws.model.dao.ATSServerRoom;
@@ -45,6 +46,10 @@ public class LiveRoomRepository {
     
     public int insertLiveRoomUserHst(ATSLiveRoomUserHst accessRoomHistory) {
     	return liveRoomMapper.insertLiveRoomUserHst(accessRoomHistory);
+    }
+    
+    public List<ATSLiveGiftBas> selectGiftList(HashMap<String,Object> map) {
+    	return liveRoomMapper.selectGiftList(map);
     }
     
 }

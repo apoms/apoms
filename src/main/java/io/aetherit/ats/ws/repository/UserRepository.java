@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import io.aetherit.ats.ws.model.ATSUser;
 import io.aetherit.ats.ws.model.common.ATSFollower;
+import io.aetherit.ats.ws.model.dao.ATSUserRel;
 import io.aetherit.ats.ws.repository.mapper.UserMapper;
 
 @Repository
@@ -49,5 +50,13 @@ public class UserRepository {
     
     public List<ATSFollower> selectFollowingList(long userid) {
     	return mapper.selectFollowingList(userid);
+    }
+    
+    public int insertFollowing(ATSUserRel userRel) {
+    	return mapper.insertFollowing(userRel);
+    }
+    
+    public int deleteFollowing(int followIdx) {
+    	return mapper.deleteFollowing(followIdx);
     }
 }

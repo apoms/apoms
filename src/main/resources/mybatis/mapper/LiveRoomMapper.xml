@@ -21,6 +21,19 @@
         <result property="regDt"             			column="reg_dt" />
         <result property="modDt"             			column="mod_dt" />
     </resultMap>
+    
+    <resultMap id="giftsResultMap" type="ATSLiveGiftBas">
+        <id property="giftIdx"                       	column="gift_idx" />
+        <result property="pointName"             		column="point_name" />
+        <result property="pointType"             		column="point_type" />
+        <result property="pointPrice"             		column="point_price" />
+        <result property="pointPriceUnit"             	column="point_price_unit" />
+        <result property="iconDomain"             		column="icon_domain" />
+        <result property="iconUrl"             			column="icon_url"/>
+        <result property="saleQty"             			column="sale_qty"/>
+        <result property="regId"             			column="reg_id" />
+        <result property="regDt"             			column="reg_dt" />
+    </resultMap>
 
 
     <select id="selectLiveRoomList" resultMap="liveRoomResultMap">
@@ -134,6 +147,23 @@
             NOW()
         )
     </insert>
+    
+    <select id="selectGiftList" parameterType="java.util.HashMap" resultMap="giftsResultMap">
+        SELECT gift_idx,
+    		   point_name,
+    		   point_type,
+    		   point_price,
+    		   point_price_unit,
+    		   icon_domain,
+    		   icon_url,
+    		   sale_qty,
+    		   reg_id,
+    		   reg_dt
+		FROM   live_gift_bas
+		ORDER  BY point_price
+    </select>
+    	
+    
     
     
     

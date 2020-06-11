@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.aetherit.ats.ws.model.ATSUser;
 import io.aetherit.ats.ws.model.common.ATSFollower;
+import io.aetherit.ats.ws.model.dao.ATSUserRel;
 
 public interface UserMapper {
     ATSUser selectUser(long userid);
@@ -21,4 +22,6 @@ public interface UserMapper {
     
     List<ATSFollower> selectFollowerList(long userid);
     List<ATSFollower> selectFollowingList(long userid);
+    int insertFollowing(ATSUserRel userRel);
+    int deleteFollowing(int followIdx);
 }

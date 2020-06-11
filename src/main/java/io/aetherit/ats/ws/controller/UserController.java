@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ import io.aetherit.ats.ws.model.ATSSimpleUser;
 import io.aetherit.ats.ws.model.ATSUser;
 import io.aetherit.ats.ws.model.ATSUserSignUp;
 import io.aetherit.ats.ws.model.common.ATSFollower;
+import io.aetherit.ats.ws.model.dao.ATSUserRel;
 import io.aetherit.ats.ws.model.type.ATSLangCode;
 import io.aetherit.ats.ws.service.AuthenticationService;
 import io.aetherit.ats.ws.service.UserService;
@@ -147,5 +149,30 @@ public class UserController {
     	}
          
         return new ResponseEntity<Object>(resultList, HttpStatus.OK);
+    }
+	
+	
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "x-auth-token", value = "", required = false, dataType = "String", paramType = "header")
+    })
+    @PostMapping("/followings")
+    public ResponseEntity<Object> setFollowing(HttpServletRequest httpRequest, @RequestHeader(value="lang-code") ATSLangCode langCd
+    		 																 , @RequestBody ATSUserRel userRel) {
+    	if(userRel.getRelId()==0){
+    		userRel.setRelId(authenticationService.getUser().getUserId());
+    	}
+		userService.setFollowing(userRel); 
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+	
+	
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "x-auth-token", value = "", required = false, dataType = "String", paramType = "header")
+    })
+    @DeleteMapping("/followings")
+    public ResponseEntity<Void> deleteFollowing(HttpServletRequest httpRequest, @RequestHeader(value="lang-code") ATSLangCode langCd
+    		 																	, @RequestParam(value = "follow-idx", required=true) int followIdx) {
+		userService.deleteFollowing(followIdx);         
+        return new ResponseEntity<>( HttpStatus.OK);
     }
 }

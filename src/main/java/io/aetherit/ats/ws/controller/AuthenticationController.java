@@ -46,11 +46,11 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
-    @PostMapping("/anoymous")
-    public ResponseEntity<ATSUserToken> getAnoymousToken(HttpServletRequest httpRequest, HttpSession session) {
+    @PostMapping("/anonymous")
+    public ResponseEntity<ATSUserToken> getAnonymousToken(HttpServletRequest httpRequest, HttpSession session) {
     	
     	httpRequest.getSession().setMaxInactiveInterval(MAX_INACTIVE_INTERVAL);
-        final ATSUserToken token = authenticationService.getAnoymousToken(session);
+        final ATSUserToken token = authenticationService.getAnonymousToken(session);
         return new ResponseEntity<ATSUserToken>(token, HttpStatus.OK);
     }
     

@@ -32,6 +32,7 @@ import io.aetherit.ats.ws.exception.FileStorageException;
 import io.aetherit.ats.ws.model.ATSResultSet;
 import io.aetherit.ats.ws.model.ATSReturnSet;
 import io.aetherit.ats.ws.model.ATSSimpleUser;
+import io.aetherit.ats.ws.model.dao.ATSLiveGiftBas;
 import io.aetherit.ats.ws.model.dao.ATSLiveRoom;
 import io.aetherit.ats.ws.model.dao.ATSLiveRoomUserHst;
 import io.aetherit.ats.ws.model.dao.ATSServerRoom;
@@ -208,12 +209,29 @@ public class LiveRoomController {
     	if(!Objects.isNull(accessRoomHistory.getUserId())) {
     		accessRoomHistory.setTypeCode(userService.getUser(accessRoomHistory.getUserId()).getType());
     	}else {
-    		accessRoomHistory.setTypeCode(ATSUserType.ANOYMOUS);
+    		accessRoomHistory.setTypeCode(ATSUserType.ANONYMOUS);
     	}
         liveRoomService.setLiveRoomAccess(accessRoomHistory);
          
         return new ResponseEntity<>(HttpStatus.OK);
     }
     
+    
+    @GetMapping("/gifts")
+    public ResponseEntity<Object> getGiftList(HttpServletRequest httpRequest, @RequestHeader(value="lang-code") ATSLangCode langCd) {
+        List<ATSLiveGiftBas> giftList = liveRoomService.getGiftList(langCd);
+         
+//        return new ResponseEntity<Object>(ATSReturnSet.builder()
+//									      .data(ATSResultSet.builder()
+//										        .code(0)
+//										        .enumCode("SUCCESS")
+//										        .msg(giftList.size()+"")
+//										        .success(true)
+//										        .data(giftList)
+//										        .build())
+//									      .build(), HttpStatus.OK);
+        
+        return new ResponseEntity<Object>(giftList,HttpStatus.OK);
+    }
     
 }

@@ -22,8 +22,10 @@
         <typeAlias type="io.aetherit.ats.ws.model.dao.ATSMovieHst" alias="ATSMovieHst" />
         <typeAlias type="io.aetherit.ats.ws.model.dao.ATSLiveRoom" alias="ATSLiveRoom" />
         <typeAlias type="io.aetherit.ats.ws.model.dao.ATSLiveRoomUserHst" alias="ATSLiveRoomUserHst" />
+        <typeAlias type="io.aetherit.ats.ws.model.dao.ATSLiveGiftBas" alias="ATSLiveGiftBas" />
         <typeAlias type="io.aetherit.ats.ws.model.dao.ATSWebrtcServer" alias="ATSWebrtcServer" />
         <typeAlias type="io.aetherit.ats.ws.model.dao.ATSServerRoom" alias="ATSServerRoom" />
+        <typeAlias type="io.aetherit.ats.ws.model.dao.ATSUserRel" alias="ATSUserRel" />
         
         <typeAlias type="io.aetherit.ats.ws.model.live.ATSLiveRoomPatch" alias="ATSLiveRoomPatch" />
         

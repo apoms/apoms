@@ -17,7 +17,7 @@ public class ATSLiveRoomUserHst {
     private long roomUserHistoryId;
     private long roomId;
     private long userId;
-    private ATSUserType typeCode;					// default : ANOYMOUS
+    private ATSUserType typeCode;					// default : ANONYMOUS
     private ATSHistoryTypeCode historyTypeCode;		// default : JOIN
     private LocalDateTime regDt;
 }

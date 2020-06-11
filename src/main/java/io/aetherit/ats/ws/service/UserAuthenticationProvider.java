@@ -60,7 +60,7 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
         return result;
     }
     
-    public Authentication anoymousAuthenticate(Authentication request,String passwd) throws AuthenticationException {
+    public Authentication anonymousAuthenticate(Authentication request,String passwd) throws AuthenticationException {
         Assert.isInstanceOf(UsernamePasswordAuthenticationToken.class, request, "Only UsernamePasswordAuthenticationToken is supported");
 
         UsernamePasswordAuthenticationToken result = null;
@@ -70,8 +70,8 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
         final ATSUser user = ATSUser.builder()
         							.cntryCode("+86")
         							.phoneNo("00000000000")
-        							.nickName("anoymous")
-        							.type(ATSUserType.ANOYMOUS)
+        							.nickName("anonymous")
+        							.type(ATSUserType.ANONYMOUS)
         							.userId(0)
         							.statusCode(ATSUserStatus.NORMAL)
         							.password(passwordEncoder.encode(passwd))

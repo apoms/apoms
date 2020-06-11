@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import io.aetherit.ats.ws.application.support.FileStorageProperties;
 import io.aetherit.ats.ws.exception.FileStorageException;
 import io.aetherit.ats.ws.model.ATSUser;
+import io.aetherit.ats.ws.model.dao.ATSLiveGiftBas;
 import io.aetherit.ats.ws.model.dao.ATSLiveRoom;
 import io.aetherit.ats.ws.model.dao.ATSLiveRoomUserHst;
 import io.aetherit.ats.ws.model.dao.ATSServerRoom;
@@ -120,6 +121,16 @@ public class LiveRoomService {
      */
     public void setLiveRoomAccess(ATSLiveRoomUserHst accessRoomHistory) {
     	liveRoomRepository.insertLiveRoomUserHst(accessRoomHistory);
+    }
+    
+    /**
+     * gift list
+     * @return
+     */
+    public List<ATSLiveGiftBas> getGiftList(ATSLangCode langCd) {
+    	HashMap<String,Object> map = new HashMap<String,Object>();
+    	map.put("langCd", langCd);
+    	return liveRoomRepository.selectGiftList(map);
     }
     
     

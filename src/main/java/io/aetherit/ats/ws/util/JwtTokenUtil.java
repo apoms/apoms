@@ -42,7 +42,7 @@ public class JwtTokenUtil {
 	      String phoneNo = simpleUser.getPhoneNo();
 	      String statusCode = "LOGIN";
 	      
-	      if(simpleUser.getType()==ATSUserType.ANOYMOUS) {
+	      if(simpleUser.getType()==ATSUserType.ANONYMOUS) {
 	    	  userId = UUID.randomUUID().toString();
 	    	  userName = simpleUser.getType().name();
 	    	  statusCode = "LOGOUT";

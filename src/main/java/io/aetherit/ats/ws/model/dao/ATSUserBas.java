@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ATSUserBas {
-    private String userId;
+    private long userId;
     private String pwd;
     private String nickName;
     private String cntryCode;
