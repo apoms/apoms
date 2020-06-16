@@ -15,9 +15,9 @@
             <level>trace</level>
         </filter>
 
-        <file>/aetherit/ats/ws/logs/ps.log</file>
+        <file>/home/sindh/applications/ats/www-api/logs/ats.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/aetherit/ats/ws/logs/ws-%d{yyyyMMdd}-%i.log</fileNamePattern>
+            <fileNamePattern>/home/sindh/applications/ats/www-api/logs/ws-%d{yyyyMMdd}-%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>500MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>

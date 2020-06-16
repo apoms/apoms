@@ -20,6 +20,7 @@ import io.aetherit.ats.ws.model.ATSPageReturnSet;
 import io.aetherit.ats.ws.model.ATSResultSet;
 import io.aetherit.ats.ws.model.ATSReturnSet;
 import io.aetherit.ats.ws.model.actor.ATSActorRanking;
+import io.aetherit.ats.ws.model.live.ATSLiveRoomCurrent;
 import io.aetherit.ats.ws.model.movie.ATSMovieSearchHot;
 import io.aetherit.ats.ws.model.movie.ATSRanking;
 import io.aetherit.ats.ws.model.type.ATSLangCode;
@@ -198,6 +199,40 @@ public class RankingController {
 																        .build())
 												      .build(), HttpStatus.OK);
     }
+    
+    
+    @GetMapping("/ranking/liveroom")
+    public ResponseEntity<Object> getLiveRoomRankingList(HttpServletRequest httpRequest, @RequestHeader(value="lang-code") ATSLangCode langCd
+    																					, @RequestParam(value = "pageNo", required=false, defaultValue="1") int pageNo
+    																					, @RequestParam(value = "pageSize", required=false, defaultValue="30") int pageSize
+    																					, @RequestParam(value = "type", required=false, defaultValue="1") int type) {
+    	
+    	HashMap<String,Object> map = new HashMap<String,Object>();
+    	map.put("pageNo", ((pageNo)-1)*pageSize);
+    	map.put("pageSize", pageSize);
+    	map.put("type", type);
+    	
+        List<ATSLiveRoomCurrent> rankingLiveRoomList = rankingService.getLiveRoomRankingList(map,langCd);
+        int rankingTotalCount = rankingService.getLiveRoomLiveRoomTotalCount(map);
+        int pageCount = rankingTotalCount/pageSize;
+        int divideRest = rankingTotalCount%pageSize;
+        if(divideRest!=0)	pageCount++;
+        
+        return new ResponseEntity<Object>(ATSPageReturnSet.builder()
+													      .data(ATSPageResultSet.builder()
+																		        .code(0)
+																		        .enumCode("SUCCESS")
+																		        .msg("30")
+																		        .success(true)
+																		        .count(rankingTotalCount)
+																		        .pageCount(pageCount)
+																		        .pageNo(pageNo)
+																		        .pageSize(pageSize)
+																		        .data(rankingLiveRoomList)
+																		        .build())
+													      .build(), HttpStatus.OK);
+    }
+    
     
     
     

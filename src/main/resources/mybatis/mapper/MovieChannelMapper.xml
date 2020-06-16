@@ -8,8 +8,22 @@
         <result property="name"               		column="name" />
         <result property="parentModule"             column="parent_module" />
         <result property="showType"              	column="show_type" />
+        <result property="showOrder"              	column="show_order" />
+        <result property="userYn"              		column="user_yn" typeHandler="BooleanOneZeroTypeHandler"/>
     </resultMap>
     
+
+	<select id="selectChannelList" resultMap="channelResultMap">
+        SELECT module_Id AS id,
+        	   channel_type,
+			   has_selection,
+			   module_name AS name,
+			   parent_module,
+			   show_type,
+			   show_order,
+			   user_yn
+		FROM   movie_channel_ctg
+    </select>
 
     <select id="selectDefaultChannelList" resultMap="channelResultMap">
         SELECT module_Id AS id,
@@ -17,33 +31,35 @@
 			   has_selection,
 			   module_name AS name,
 			   parent_module,
-			   show_type
+			   show_type,
+			   show_order,
+			   user_yn
 		FROM   movie_channel_ctg
 		WHERE  channel_type = 1
     </select>
     
     
-    <select id="selectSubChannelList" resultMap="channelResultMap">
+    <select id="selectSubChannelList" parameterType="java.util.HashMap" resultMap="channelResultMap">
         SELECT module_Id AS id,
         	   channel_type,
 			   has_selection,
 			   module_name AS name,
 			   parent_module,
-			   show_type
+			   show_type,
+			   show_order,
+			   user_yn
 		FROM   movie_channel_ctg
 		WHERE  channel_type = 2
+		<if test="moduleId!=null and moduleId!=0">
+		AND    parent_module = #{moduleId}
+		</if>
+		<if test="hasSelection!=null">
+		AND    has_selection = #{hasSelection}
+		</if>
+		ORDER BY id
+		<if test="pageSize!=null">
+		Limit #{pageSize}
+		</if>
     </select>
     
-    
-    <select id="selectSubChannel2List" parameterType="java.util.HashMap"  resultMap="channelResultMap">
-        SELECT module_Id AS id,
-        	   channel_type,
-			   has_selection,
-			   module_name AS name,
-			   parent_module,
-			   show_type
-		FROM   movie_channel_ctg
-		WHERE  parent_module = #{moduleId}
-		AND    module_Id != #{moduleId}
-    </select>
 </mapper>

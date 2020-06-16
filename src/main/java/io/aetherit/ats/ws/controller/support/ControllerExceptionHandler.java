@@ -25,6 +25,7 @@ import io.aetherit.ats.ws.exception.CanNotFoundUserTypeException;
 import io.aetherit.ats.ws.exception.CanNotFoundWalletException;
 import io.aetherit.ats.ws.exception.ErrorCode;
 import io.aetherit.ats.ws.exception.ErrorResponse;
+import io.aetherit.ats.ws.exception.NotEnoughAvailablePointException;
 import io.aetherit.ats.ws.exception.UserPhoneDuplicationException;
 
 @ControllerAdvice
@@ -85,6 +86,14 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         final ErrorResponse response = getErrorResponse(ex, httpRequest, status);
 
         return new ResponseEntity<>(response, status);
+    }
+    
+    @ExceptionHandler(NotEnoughAvailablePointException.class)
+    public ResponseEntity<ErrorResponse> handleNotEnoughAvailablePointException(HttpServletRequest httpRequest, NotEnoughAvailablePointException ex) {
+    	final HttpStatus status = HttpStatus.PAYMENT_REQUIRED;
+    	final ErrorResponse response = getErrorResponse(ex, httpRequest, status);
+    	
+    	return new ResponseEntity<>(response, status);
     }
     
     @ExceptionHandler(UserPhoneDuplicationException.class)

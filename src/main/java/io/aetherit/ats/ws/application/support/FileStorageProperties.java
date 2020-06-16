@@ -12,5 +12,6 @@ public class FileStorageProperties {
     private String uploadDir;
     private String filesDomain;
     private String moviePath;
-    private String thumnailUrl;
+    private String coverPath;
+    private String thumbnailUrl;
 }

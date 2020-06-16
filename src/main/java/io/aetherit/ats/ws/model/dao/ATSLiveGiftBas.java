@@ -3,6 +3,7 @@ package io.aetherit.ats.ws.model.dao;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import io.aetherit.ats.ws.model.type.ATSPointType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class ATSLiveGiftBas {
     private int giftIdx;
     private String pointName;
-    private String pointType;
+    private ATSPointType pointType;
     private BigDecimal pointPrice;
     private String pointPriceUnit;
     private String iconDomain;

@@ -1,4 +1,4 @@
-package io.aetherit.ats.ws.model.dao;
+package io.aetherit.ats.ws.model.live;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ATSLiveRoom {
+public class ATSLiveRoomRanking {
     private long roomId;
     private long userId;
     private String roomDesc;
@@ -21,4 +21,6 @@ public class ATSLiveRoom {
     private ATSLiveRoomStatus statusCode;
     private String thumbnailUrl;
     private LocalDateTime regDt;
+    private int publishTime;
+    private int joinedCount;
 }

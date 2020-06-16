@@ -6,8 +6,19 @@
         <result property="userId"             			column="user_id" />
         <result property="typeCode"             		column="type_code"/>
         <result property="statusCode"             		column="status_code"/>
-        <result property="thumnailUrl"               	column="thumnail_url" />
+        <result property="thumbnailUrl"               	column="thumbnail_url" />
         <result property="regDt"             			column="reg_dt" />
+    </resultMap>
+    
+    <resultMap id="liveRoomRankingResultMap" type="ATSLiveRoomRanking">
+        <id property="roomId"                       	column="room_id" />
+        <result property="userId"             			column="user_id" />
+        <result property="typeCode"             		column="type_code"/>
+        <result property="statusCode"             		column="status_code"/>
+        <result property="thumbnailUrl"               	column="thumbnail_url" />
+        <result property="regDt"             			column="reg_dt" />
+        <result property="publishTime"             		column="publish_time" />
+        <result property="joinedCount"             		column="joined_count" />
     </resultMap>
     
     <resultMap id="webrtcServerResultMap" type="ATSWebrtcServer">
@@ -36,22 +47,93 @@
     </resultMap>
 
 
-    <select id="selectLiveRoomList" resultMap="liveRoomResultMap">
-        SELECT room_id,
-			   user_id,
-			   type_code,
-			   status_code,
-			   thumnail_url,
-			   reg_dt
-		FROM   ats_live_room
+    <select id="selectLiveRoomList" resultMap="liveRoomRankingResultMap">
+        SELECT room.room_id,
+			   room.user_id,
+			   room.type_code,
+			   room.status_code,
+			   room.thumbnail_url,
+			   room.reg_dt,
+			   IF((
+					SELECT status_code
+					FROM ats_live_room_state
+					WHERE room_id = room.room_id
+					AND room_state_seq = (
+											SELECT MAX(room_state_seq)
+											FROM ats_live_room_state
+											WHERE room_id = room.room_id
+										 )
+					)='ONAIR',
+					TIMESTAMPDIFF(MINUTE, ( SELECT reg_dt
+											FROM ats_live_room_state
+											WHERE room_id = room.room_id
+											AND room_state_seq = (
+																	SELECT MAX(room_state_seq)
+																	FROM ats_live_room_state
+																	WHERE room_id = room.room_id
+																 )
+										  ), NOW()
+								  ),
+					NULL
+				) AS publish_time,
+			   COUNT(hst.room_id) AS joined_count
+		FROM   ats_live_room room 
+		LEFT OUTER JOIN 
+			   ats_live_room_user_hst hst
+		ON    status_code = 'ONAIR' 
+		and   room.room_id = hst.room_id
+		GROUP BY room.room_id	
+		ORDER BY room.reg_dt DESC
+		
     </select>
+    
+    
+    <select id="selectLiveRoomRankingList" resultMap="liveRoomRankingResultMap">
+		SELECT room.room_id,
+			   room.user_id,
+			   room.type_code,
+			   room.status_code,
+			   room.thumbnail_url,
+			   room.reg_dt,
+			   IF((
+					SELECT status_code
+					FROM ats_live_room_state
+					WHERE room_id = room.room_id
+					AND room_state_seq = (
+											SELECT MAX(room_state_seq)
+											FROM ats_live_room_state
+											WHERE room_id = room.room_id
+										 )
+					)='ONAIR',
+					TIMESTAMPDIFF(MINUTE, ( SELECT reg_dt
+											FROM ats_live_room_state
+											WHERE room_id = room.room_id
+											AND room_state_seq = (
+																	SELECT MAX(room_state_seq)
+																	FROM ats_live_room_state
+																	WHERE room_id = room.room_id
+																 )
+										  ), NOW()
+								  ),
+					NULL
+				) AS publish_time,
+			   COUNT(hst.room_id) AS joined_count
+		FROM   ats_live_room room 
+		LEFT OUTER JOIN 
+			   ats_live_room_user_hst hst
+		ON     room.room_id = hst.room_id
+		GROUP BY room.room_id	
+		ORDER BY joined_count DESC
+		LIMIT 10
+    </select>
+    
     
     <select id="selectLiveRoom" parameterType="java.util.HashMap" resultMap="liveRoomResultMap">
         SELECT room_id,
 			   user_id,
 			   type_code,
 			   status_code,
-			   thumnail_url,
+			   thumbnail_url,
 			   reg_dt
 		FROM   ats_live_room
 		WHERE  1 = 1
@@ -64,7 +146,28 @@
     </select>
     
     
-    <insert id="patchLiveRoom" parameterType="ATSLiveRoomPatch">
+    <insert id="insertLiveRoomState" parameterType="ATSLiveRoomPatch">
+		INSERT INTO ats_live_room_state 
+		(
+			room_id, 
+			room_state_seq, 
+			status_code, 
+			reg_dt
+		)
+		VALUES 
+		(
+			#{roomId}, 
+			(SELECT IFNULL(MAX(roomState.room_state_seq),0)+1
+			 FROM   ats_live_room_state roomState
+			 WHERE  roomState.room_id = #{roomId}
+			),
+			#{statusCode},
+			NOW()
+		)
+	</insert>
+
+    
+    <update id="patchLiveRoom" parameterType="ATSLiveRoomPatch">
 		UPDATE ats_live_room
 		<set>
 	      <if test="typeCode != null">
@@ -73,14 +176,15 @@
 	      <if test="statusCode != null">
 	           status_code = #{statusCode},
 	      </if>
-	      <if test="thumnailUrl != null">
-	           "thumnail_url != null" = #{"thumnailUrl != null"},
+	      <if test="thumbnailUrl != null">
+	           "thumbnail_url != null" = #{"thumbnailUrl != null"},
 	      </if>
 	    </set>
         where  room_id = #{roomId}
-    </insert>
+    </update>
     
-    <select id="selectWebrtcServer" resultMap="liveRoomResultMap">
+    
+    <select id="selectWebrtcServer" resultMap="webrtcServerResultMap">
         SELECT server_id,
 			   server_name,
 			   max_users,
@@ -98,10 +202,10 @@
 							WHERE  room_id = #{roomId}
 						   )
 		</if>
-		<if test="roomId!=null and roomId==0">
+		<if test="roomId!=null and roomId==1">
 		AND    server_id = (SELECT min_joined.server_id
 							FROM (SELECT server_id,
-										 SUM(joined_count) joined_count
+										 COUNT(1) joined_count
 								  FROM   ats_server_room
 								  GROUP BY server_id
 								  ORDER BY joined_count
@@ -109,6 +213,11 @@
 								 ) min_joined
 						   )
 		</if>
+		<if test="roomId!=null and roomId==0">
+		ORDER BY mod_dt DESC
+		LIMIT 1
+		</if>
+		
     </select>
     
     
@@ -148,6 +257,7 @@
         )
     </insert>
     
+    
     <select id="selectGiftList" parameterType="java.util.HashMap" resultMap="giftsResultMap">
         SELECT gift_idx,
     		   point_name,
@@ -160,11 +270,72 @@
     		   reg_id,
     		   reg_dt
 		FROM   live_gift_bas
+		where  1 = 1
+		<if test="type != null and !type.equals('')">
+	    AND    point_type = #{type}
+	    </if>
 		ORDER  BY point_price
+		<if test="pageSize!=null and pageSize!=0">
+		LIMIT  #{pageSize} 
+		</if>
+		<if test="pageNo!=null and pageNo!=0">
+        OFFSET #{pageNo}
+		</if>
     </select>
+    
+    <select id="selectGiftTotalCount" parameterType="java.util.HashMap" resultType="int">
+        SELECT COUNT(1)
+		FROM   live_gift_bas
+		where  1 = 1
+		<if test="type != null and !type.equals('')">
+	    AND    point_type = #{type}
+	    </if>
+    </select>
+    
+    
+    <select id="selectGift" parameterType="int" resultMap="giftsResultMap">
+        SELECT gift_idx,
+    		   point_name,
+    		   point_type,
+    		   point_price,
+    		   point_price_unit,
+    		   icon_domain,
+    		   icon_url,
+    		   sale_qty,
+    		   reg_id,
+    		   reg_dt
+		FROM   live_gift_bas
+		where  gift_idx = #{giftIdx}
+    </select>
+    
     	
+    <insert id="insertLiveGiftRel" parameterType="ATSLiveGiftRel">
+		INSERT INTO live_gift_rel 
+        (
+        	gift_rel_id,
+		    room_id,
+		    gift_idx,
+		    user_id,
+		    donate_qty,
+		    reg_dt
+        )
+        VALUES 
+        (
+            #{giftRelId},
+            #{roomId},
+            #{giftIdx},
+        	#{userId},
+        	#{donateQty},
+            NOW()
+        )
+    </insert>
     
     
+    <update id="increaseGiftCount" parameterType="java.util.HashMap">
+    	UPDATE live_gift_bas
+    	SET	   sale_qty = sale_qty + #{donateQty}
+    	WHERE  gift_idx = #{giftIdx}
+    </update>
     
     
 </mapper>

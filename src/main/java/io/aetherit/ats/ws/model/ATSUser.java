@@ -1,5 +1,6 @@
 package io.aetherit.ats.ws.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotBlank;
@@ -32,6 +33,7 @@ public class ATSUser {
     @NotNull
     private ATSUserType type;
     private ATSUserStatus statusCode;
+    private BigDecimal pointAmt;
     
     private LocalDateTime regDt;
     private LocalDateTime modDt;

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import io.aetherit.ats.ws.model.dao.ATSMovieActorBas;
 import io.aetherit.ats.ws.model.dao.ATSMovieBas;
 import io.aetherit.ats.ws.model.dao.ATSMovieSearchTxn;
+import io.aetherit.ats.ws.model.live.ATSLiveRoomRanking;
 import io.aetherit.ats.ws.repository.mapper.RankingMapper;
 
 @Repository
@@ -58,6 +59,14 @@ public class RankingRepository {
     
     public int selectRankingActorTotalCount(HashMap<String,Object> map) {
     	return rankingMapper.selectRankingActorTotalCount(map);
+    }
+    
+    public List<ATSLiveRoomRanking> selectLiveRoomRankingList(HashMap<String,Object> map) {
+    	return rankingMapper.selectLiveRoomRankingList(map);
+    }
+    
+    public int selectLiveRoomRankingTotalCount(HashMap<String,Object> map) {
+    	return rankingMapper.selectLiveRoomRankingTotalCount(map);
     }
     
     public List<ATSMovieSearchTxn> selectSearchHotList(HashMap<String,Object> map) {

@@ -9,14 +9,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.aetherit.ats.ws.model.ATSUser;
 import io.aetherit.ats.ws.model.actor.ATSActorRanking;
 import io.aetherit.ats.ws.model.dao.ATSMovieActorBas;
 import io.aetherit.ats.ws.model.dao.ATSMovieBas;
 import io.aetherit.ats.ws.model.dao.ATSMovieSearchTxn;
+import io.aetherit.ats.ws.model.dao.ATSWebrtcServer;
+import io.aetherit.ats.ws.model.live.ATSLiveRoomCurrent;
+import io.aetherit.ats.ws.model.live.ATSLiveRoomRanking;
 import io.aetherit.ats.ws.model.movie.ATSCover;
 import io.aetherit.ats.ws.model.movie.ATSMovieSearchHot;
 import io.aetherit.ats.ws.model.movie.ATSRanking;
 import io.aetherit.ats.ws.model.type.ATSLangCode;
+import io.aetherit.ats.ws.model.type.ATSLiveRoomStatus;
+import io.aetherit.ats.ws.repository.LiveRoomRepository;
 import io.aetherit.ats.ws.repository.RankingRepository;
 
 @Service
@@ -25,12 +31,17 @@ public class RankingService {
 	private static final Logger logger = LoggerFactory.getLogger(RankingService.class);
 
     private CommonService commonService;
+    private UserService userService;
+    
     private RankingRepository rankingRepository;
 
     @Autowired
-    public RankingService(RankingRepository rankingRepository, CommonService commonService) {
+    public RankingService(RankingRepository rankingRepository, 
+    					  CommonService commonService,
+    					  UserService userService) {
         this.rankingRepository = rankingRepository;
         this.commonService = commonService;
+        this.userService = userService;
     }
 
     
@@ -327,7 +338,7 @@ public class RankingService {
         												  .photoUrl(actor.getPhotoUrl())
         												  .ranking(i++)								// 
         												  .starLevel(actor.getStarLevel()+"")		// 총 출연작의 평점 
-        												  .type((int) map.get("type"))									// TODO : 어디서 가져오는 지 확인 피료
+        												  .type((int) map.get("type"))
         												  .build();
         	actorRankingList.add(actorRanking);
         }
@@ -337,6 +348,43 @@ public class RankingService {
 	
 	public int getRankingActorTotalCount(HashMap<String,Object> map) {
 		return rankingRepository.selectRankingActorTotalCount(map);
+	}
+	
+	
+	/**
+	 * live room view count 
+	 * @param map
+	 * @return
+	 */
+	public List<ATSLiveRoomCurrent> getLiveRoomRankingList(HashMap<String,Object> map, ATSLangCode langCd) {
+		List<ATSLiveRoomCurrent> liveRoomServerList = new ArrayList<ATSLiveRoomCurrent>();
+    	List<ATSLiveRoomRanking> liveRoomList = rankingRepository.selectLiveRoomRankingList(map);
+    	int i = 0;
+    	for(ATSLiveRoomRanking liveRoom:liveRoomList) {
+    		ATSUser user = userService.getUser(liveRoom.getUserId());
+    		
+    		boolean liveStatus = false;
+    		
+    		if(liveRoom.getStatusCode()==ATSLiveRoomStatus.ONAIR) liveStatus=true;
+    		
+    		ATSLiveRoomCurrent liveRoomCurrent = ATSLiveRoomCurrent.builder()
+    															   .anchorId(++i)
+    															   .nickname(user.getNickName())
+    															   .liveCoverUrl(liveRoom.getThumbnailUrl())
+    															   .topic(liveRoom.getRoomDesc())
+    															   .liveStatus(liveStatus)
+    															   .roomId(liveRoom.getRoomId())
+    															   .userId(liveRoom.getUserId())
+    															   .publishTime(liveRoom.getPublishTime())
+    															   .popularity(liveRoom.getJoinedCount())
+    															   .build();
+    		liveRoomServerList.add(liveRoomCurrent);
+    	}
+		return liveRoomServerList;
+	}
+	
+	public int getLiveRoomLiveRoomTotalCount(HashMap<String,Object> map) {
+		return rankingRepository.selectLiveRoomRankingTotalCount(map);
 	}
 	
 	

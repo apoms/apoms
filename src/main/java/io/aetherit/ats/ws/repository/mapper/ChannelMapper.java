@@ -7,6 +7,6 @@ import io.aetherit.ats.ws.model.dao.ATSMovieChannelCtg;
 
 public interface ChannelMapper {
 	List<ATSMovieChannelCtg> selectDefaultChannelList();
-	List<ATSMovieChannelCtg> selectSubChannelList();
-	List<ATSMovieChannelCtg> selectSubChannel2List(HashMap<String,Object> map);
+	List<ATSMovieChannelCtg> selectChannelList();
+	List<ATSMovieChannelCtg> selectSubChannelList(HashMap<String,Object> map);
 }

@@ -88,10 +88,12 @@ public class UserController {
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "x-auth-token", value = "", required = false, dataType = "String", paramType = "header")
     })
-	@GetMapping(value = "/user/{userId}")
-	public ResponseEntity<Object> getUserInfo(HttpServletRequest httpRequest, @PathVariable long userId) throws Exception{
+	@GetMapping(value = "/user")
+	public ResponseEntity<Object> getUserInfo(HttpServletRequest httpRequest, @RequestParam(value = "userId", required=false, defaultValue="0") long userId) throws Exception{
 		ATSSimpleUser user = authenticationService.getUser();
-		return new ResponseEntity<Object>(userService.getUser(userId), HttpStatus.OK);
+		
+		System.out.println(user.getUserId());
+		return new ResponseEntity<Object>(userService.getUser(user.getUserId()), HttpStatus.OK);
 	}
 	
 	

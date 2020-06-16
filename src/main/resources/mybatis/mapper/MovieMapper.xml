@@ -2,7 +2,7 @@
 <mapper namespace="io.aetherit.ats.ws.repository.mapper.MovieMapper">
 
     <resultMap id="MovieResultMap" type="ATSMovieBas">
-        <id property="movId"                       	column="mov_Id" />
+        <id property="movId"                       	column="mov_id" />
         <result property="movName"             		column="mov_name" />
         <result property="mins"             		column="mins" />
         <result property="playCnt"               	column="play_cnt" />
@@ -25,21 +25,25 @@
         <result property="P720"              		column="720P" />
         <result property="P1080"              		column="1080P" />
         <result property="movDesc"              	column="mov_desc" />
+        <result property="movProvider"              column="mov_provider" typeHandler="BooleanOneZeroTypeHandler"/>
         <result property="isMosaic"              	column="is_mosaic" typeHandler="BooleanOneZeroTypeHandler" />
         <result property="movScore"              	column="mov_score" />
         <result property="giftTotal"              	column="gift_total" />
-<!--         <result property="movSaving"              	column="mov_saving" /> -->
         <result property="showYn"              		column="show_yn" typeHandler="BooleanOneZeroTypeHandler" />
         <result property="showOrder"              	column="show_order" />
+        <result property="recommendDate"           	column="recommend_date" />
+        <result property="recommendDesc"           	column="recommend_desc" />
+        <result property="vipFlag"              	column="vip_flag" typeHandler="BooleanOneZeroTypeHandler"/>
         <result property="gmtCreateId"              column="gmt_create_Id" />
         <result property="gmtCreate"              	column="gmt_create" />
         <result property="modId"              		column="mod_id" />
         <result property="modDt"              		column="mod_dt" />
     </resultMap>
     
+
     <resultMap id="MovieCoverImageResultMap" type="ATSMovieCoverImage">
         <id property="coverIdx"                       	column="cover_idx" />
-        <result property="movId"             			column="mov_Id" />
+        <result property="movId"             			column="mov_id" />
         <result property="coverDomain"             		column="cover_domain" />
         <result property="horizontalLarge"              column="horizontal_large" />
         <result property="horizontalSmall"             	column="horizontal_small" />
@@ -52,7 +56,7 @@
     
     <resultMap id="MovieTagDtlResultMap" type="ATSMovieTagDtl">
         <id property="id"                       		column="id" />
-        <result property="movId"             			column="mov_Id" />
+        <result property="movId"             			column="mov_id" />
         <result property="name"             		column="name" />
         <result property="langCd"              			column="lang_cd" />
     </resultMap>
@@ -80,7 +84,7 @@
     </resultMap>
 
     <select id="selectNewMovieList" resultMap="MovieResultMap">
-        SELECT mov_Id,
+        SELECT mov_id,
 			   mov_name,
 			   mins,
 			   play_cnt,
@@ -96,6 +100,7 @@
 			   mov_sn,
 			   mov_sn_ori,
 			   mov_type,
+			   mov_provider,
 			   domain,
 			   240P,
 			   360P,
@@ -108,6 +113,9 @@
 			   gift_total,
 			   show_yn,
 			   show_order,
+			   recommend_date,
+			   recommend_desc,
+			   vip_flag,
 			   gmt_create_Id,
 			   gmt_create,
 			   mod_id,
@@ -120,18 +128,18 @@
     
     <select id="selectMovieTagDtlList" parameterType="java.util.HashMap" resultMap="MovieTagDtlResultMap">
         SELECT id,
-			   mov_Id,
+			   mov_id,
 			   name,
-			   lang_cd,
+			   lang_cd
 		FROM   movie_tag_dtl
-		WHERE  mov_Id = #{movId}
+		WHERE  mov_id = #{movId}
 		AND    lang_cd = #{langCd}
     </select>
     
     
     <select id="selectCoverImageList" parameterType="java.util.HashMap" resultMap="MovieCoverImageResultMap">
         SELECT cover_idx,
-			   mov_Id,
+			   mov_id,
 			   cover_domain,
 			   horizontal_large,
 			   horizontal_small,
@@ -173,7 +181,7 @@
 
 
 	<select id="selectActorMovieList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
-        SELECT bas.mov_Id,
+        SELECT bas.mov_id,
 			   bas.mov_name,
 			   bas.mins,
 			   bas.play_cnt,
@@ -189,6 +197,7 @@
 			   bas.mov_sn,
 			   bas.mov_sn_ori,
 			   bas.mov_type,
+			   bas.mov_provider,
 			   bas.domain,
 			   bas.240P,
 			   bas.360P,
@@ -199,9 +208,11 @@
 			   bas.is_mosaic,
 			   bas.mov_score,
 			   bas.gift_total,
-/*			   bas.mov_saving,			*/
 			   bas.show_yn,
 			   bas.show_order,
+			   bas.recommend_date,
+			   bas.recommend_desc,
+			   bas.vip_flag,
 			   bas.gmt_create_Id,
 			   bas.gmt_create,
 			   bas.mod_id,
@@ -237,59 +248,7 @@
 
 
     <select id="selectTodayRankingList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
-        SELECT bas.mov_Id,
-			   bas.mov_name,
-			   bas.mins,
-			   bas.play_cnt,
-			   bas.play_cnt_str,
-			   bas.down_cnt,
-			   bas.has_down,
-			   bas.love_cnt,
-			   bas.has_love,
-			   bas.up_cnt,
-			   bas.has_up,
-			   bas.diss_cnt,
-			   bas.has_diss,
-			   bas.mov_sn,
-			   bas.mov_sn_ori,
-			   bas.mov_type,
-			   bas.domain,
-			   bas.240P,
-			   bas.360P,
-			   bas.480P,
-			   bas.720P,
-			   bas.1080P,
-			   bas.mov_desc,
-			   bas.is_mosaic,
-			   bas.mov_score,
-			   bas.gift_total,
-			   bas.show_yn,
-			   bas.show_order,
-			   bas.gmt_create_Id,
-			   bas.gmt_create,
-			   bas.mod_id,
-			   bas.mod_dt
-		FROM   movie_bas bas,
-			   (
-				SELECT mov_Id,
-					   COUNT(1) AS viewCnt
-				FROM   movie_hst
-		<![CDATA[				
-				WHERE  TIMESTAMPDIFF(hour, access_dt, now())<=24
-		]]>				
-				AND    access_type = 'view'
-				AND    lang_cd = #{langCd}
-				GROUP BY mov_Id
-				) hst
-		WHERE   bas.mov_Id = hst.mov_Id
-		ORDER BY hst.viewCnt	
-		
-		LIMIT  #{pageSize}
-    </select>
-
-    
-    <select id="selectTodayRecommandList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
-        SELECT mov_Id,
+        SELECT mov_id,
 			   mov_name,
 			   mins,
 			   play_cnt,
@@ -305,6 +264,7 @@
 			   mov_sn,
 			   mov_sn_ori,
 			   mov_type,
+			   mov_provider,
 			   domain,
 			   240P,
 			   360P,
@@ -315,9 +275,66 @@
 			   is_mosaic,
 			   mov_score,
 			   gift_total,
-/*			   mov_saving,			*/
 			   show_yn,
 			   show_order,
+			   recommend_date,
+			   recommend_desc,
+			   vip_flag,
+			   gmt_create_Id,
+			   gmt_create,
+			   mod_id,
+			   mod_dt
+		FROM   movie_bas bas,
+			   (
+				SELECT mov_id,
+					   COUNT(1) AS viewCnt
+				FROM   movie_hst
+		<![CDATA[				
+				WHERE  TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 *24 * 1
+		]]>
+				AND    history_type_code = 'view'
+				GROUP BY mov_id
+				) hst
+		WHERE   bas.mov_id = hst.mov_id
+		ORDER BY hst.viewCnt	
+		
+		LIMIT  #{pageSize}
+    </select>
+
+    
+    <select id="selectTodayRecommandList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
+        SELECT mov_id,
+			   mov_name,
+			   mins,
+			   play_cnt,
+			   play_cnt_str,
+			   down_cnt,
+			   has_down,
+			   love_cnt,
+			   has_love,
+			   up_cnt,
+			   has_up,
+			   diss_cnt,
+			   has_diss,
+			   mov_sn,
+			   mov_sn_ori,
+			   mov_type,
+			   mov_provider,
+			   domain,
+			   240P,
+			   360P,
+			   480P,
+			   720P,
+			   1080P,
+			   mov_desc,
+			   is_mosaic,
+			   mov_score,
+			   gift_total,
+			   show_yn,
+			   show_order,
+			   recommend_date,
+			   recommend_desc,
+			   vip_flag,
 			   gmt_create_Id,
 			   gmt_create,
 			   mod_id,
@@ -329,7 +346,7 @@
     
     
     <select id="selectWonderfulMovieList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
-        SELECT mov_Id,
+        SELECT mov_id,
 			   mov_name,
 			   mins,
 			   play_cnt,
@@ -345,6 +362,7 @@
 			   mov_sn,
 			   mov_sn_ori,
 			   mov_type,
+			   mov_provider,
 			   domain,
 			   240P,
 			   360P,
@@ -355,9 +373,11 @@
 			   is_mosaic,
 			   mov_score,
 			   gift_total,
-/*			   mov_saving,			*/
 			   show_yn,
 			   show_order,
+			   recommend_date,
+			   recommend_desc,
+			   vip_flag,
 			   gmt_create_Id,
 			   gmt_create,
 			   mod_id,
@@ -369,7 +389,7 @@
     
     
     <select id="selectSelectionMovieList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
-        SELECT bas.mov_Id,
+        SELECT bas.mov_id,
 			   bas.mov_name,
 			   bas.mins,
 			   bas.play_cnt,
@@ -385,6 +405,7 @@
 			   bas.mov_sn,
 			   bas.mov_sn_ori,
 			   bas.mov_type,
+			   bas.mov_provider,
 			   bas.domain,
 			   bas.240P,
 			   bas.360P,
@@ -395,16 +416,18 @@
 			   bas.is_mosaic,
 			   bas.mov_score,
 			   bas.gift_total,
-/*			   bas.mov_saving,			*/
 			   bas.show_yn,
 			   bas.show_order,
+			   bas.recommend_date,
+			   bas.recommend_desc,
+			   bas.vip_flag,
 			   bas.gmt_create_Id,
 			   bas.gmt_create,
 			   bas.mod_id,
 			   bas.mod_dt
 		FROM   movie_bas bas,
 			   movie_channel_rel channel
-		WHERE  channel.module_Id = #{moduleId}
+		WHERE  channel.module_id = #{moduleId}
 		AND    bas.mov_id = channel.mov_id
 		ORDER BY gmt_create DESC
 			
@@ -439,7 +462,7 @@
     
     
     <select id="selectMovieList" parameterType="java.util.HashMap"  resultMap="MovieResultMap">
-        SELECT mov_Id,
+        SELECT mov_id,
 			   mov_name,
 			   mins,
 			   play_cnt,
@@ -455,6 +478,7 @@
 			   mov_sn,
 			   mov_sn_ori,
 			   mov_type,
+			   mov_provider,
 			   domain,
 			   240P,
 			   360P,
@@ -467,6 +491,9 @@
 			   gift_total,
 			   show_yn,
 			   show_order,
+			   recommend_date,
+			   recommend_desc,
+			   vip_flag,
 			   gmt_create_Id,
 			   gmt_create,
 			   mod_id,
@@ -475,7 +502,7 @@
 		WHERE  1 = 1
 		
 		<if test="selectionType!=null">
-		AND    mov_Id IN (SELECT mov_Id
+		AND    mov_id IN (SELECT mov_id
 						  FROM   movie_channel_rel
 						  WHERE  module_id in (SELECT module_id
 						  					   FROM   movie_channel_ctg
@@ -485,7 +512,7 @@
 		</if>
 		
 		<if test="moduleId!=null and moduleId!=0">
-		AND    mov_Id IN (SELECT mov_Id
+		AND    mov_id IN (SELECT mov_id
 						  FROM   movie_channel_rel
 						  WHERE  module_id = #{moduleId}
 						 )
@@ -520,7 +547,7 @@
 		FROM   movie_bas
 		WHERE  1 = 1
 		<if test="selectionType!=null">
-		AND    mov_Id IN (SELECT mov_Id
+		AND    mov_id IN (SELECT mov_id
 						  FROM   movie_channel_rel
 						  WHERE  module_id in (SELECT module_id
 						  					   FROM   movie_channel_ctg
@@ -530,7 +557,7 @@
 		</if>
 		
 		<if test="moduleId!=null and moduleId!=0">
-		AND    mov_Id IN (SELECT mov_Id
+		AND    mov_id IN (SELECT mov_id
 						  FROM   movie_channel_rel
 						  WHERE  module_id = #{moduleId}
 						 )
@@ -555,7 +582,7 @@
     
     
     <select id="selectSearchMovieList" parameterType="java.util.HashMap"  resultMap="MovieResultMap">
-        SELECT mov_Id,
+        SELECT mov_id,
 			   mov_name,
 			   mins,
 			   play_cnt,
@@ -571,6 +598,7 @@
 			   mov_sn,
 			   mov_sn_ori,
 			   mov_type,
+			   mov_provider,
 			   domain,
 			   240P,
 			   360P,
@@ -581,9 +609,11 @@
 			   is_mosaic,
 			   mov_score,
 			   gift_total,
-/*			   mov_saving,			*/
 			   show_yn,
 			   show_order,
+			   recommend_date,
+			   recommend_desc,
+			   vip_flag,
 			   gmt_create_Id,
 			   gmt_create,
 			   mod_id,
@@ -659,13 +689,13 @@
 			   actor.mod_dt
 		FROM   movie_actor_bas actor,
 			   movie_actor_rel rel
-		where  rel.mov_Id = #{movId}
+		where  rel.mov_id = #{movId}
 		and	   actor.actor_idx = rel.actor_idx
     </select>
     
     
     <select id="selectMovieBas" parameterType="java.util.HashMap"  resultMap="MovieResultMap">
-        SELECT mov_Id,
+        SELECT mov_id,
 			   mov_name,
 			   mins,
 			   play_cnt,
@@ -681,6 +711,7 @@
 			   mov_sn,
 			   mov_sn_ori,
 			   mov_type,
+			   mov_provider,
 			   domain,
 			   240P,
 			   360P,
@@ -693,17 +724,20 @@
 			   gift_total,
 			   show_yn,
 			   show_order,
+			   recommend_date,
+			   recommend_desc,
+			   vip_flag,
 			   gmt_create_Id,
 			   gmt_create,
 			   mod_id,
 			   mod_dt
 		FROM   movie_bas
-		where  mov_Id = #{movId}
+		where  mov_id = #{movId}
     </select>
     
     
     <select id="selectSimilarMovieList" parameterType="java.util.HashMap"  resultMap="MovieResultMap">
-        SELECT mov_Id,
+        SELECT mov_id,
 			   mov_name,
 			   mins,
 			   play_cnt,
@@ -719,6 +753,7 @@
 			   mov_sn,
 			   mov_sn_ori,
 			   mov_type,
+			   mov_provider,
 			   domain,
 			   240P,
 			   360P,
@@ -731,12 +766,15 @@
 			   gift_total,
 			   show_yn,
 			   show_order,
+			   recommend_date,
+			   recommend_desc,
+			   vip_flag,
 			   gmt_create_Id,
 			   gmt_create,
 			   mod_id,
 			   mod_dt
 		FROM   movie_bas
-		WHERE  mov_Id = #{movId}
+		WHERE  mov_id = #{movId}
     </select>
     
     
@@ -744,7 +782,7 @@
     	INSERT INTO movie_reaction_txn 
         (
             reaction_idx,
-            mov_Id,
+            mov_id,
             user_id,
             reaction_type,
             parent_idx,
@@ -766,7 +804,7 @@
     <update id="updateMovieBasUp">
     	UPDATE 	movie_bas
         SET		up_cnt = IFNULL(up_cnt,0) + 1
-        WHERE   mov_Id = #{movId}
+        WHERE   mov_id = #{movId}
     </update>
     
     
@@ -774,7 +812,7 @@
     	INSERT INTO movie_reaction_txn 
         (
             reaction_idx,
-            mov_Id,
+            mov_id,
             user_id,
             reaction_type,
             parent_idx,
@@ -796,7 +834,7 @@
     <update id="updateMovieBasDown">
     	UPDATE 	movie_bas
         SET		down_cnt = IFNULL(down_cnt,0) + 1
-        WHERE   mov_Id = #{movId}
+        WHERE   mov_id = #{movId}
     </update>
     
     

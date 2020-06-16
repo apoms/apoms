@@ -1,8 +1,8 @@
 package io.aetherit.ats.ws.model.dao;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import io.aetherit.ats.ws.model.type.ATSUserType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,23 +13,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ATSUserDetail {
-    private String userId;
+    private long userId;
     private String uploadUserIconDomain;
     private String uploadUserIcon;
     private String userDesc;
     private String userStatus;
-    private String uploadUserFans;
-    private String collectionCnt;
-    private String followerCnt;
-    private String point_amt;
+    private int uploadUserFans;
+    private int collectionCnt;
+    private int followerCnt;
+    private BigDecimal pointAmt;
     private String uploaderInviteCode;
     private String gender;
-    private String age;
+    private int age;
     private String career;
     private String marriage;
     private String selectLang;
-    private String regId;
+    private long regId;
     private LocalDateTime regDt;
-    private String modId;
+    private long modId;
     private LocalDateTime modDt;
 }

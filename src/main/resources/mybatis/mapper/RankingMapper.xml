@@ -2,7 +2,7 @@
 <mapper namespace="io.aetherit.ats.ws.repository.mapper.RankingMapper">
 
     <resultMap id="MovieResultMap" type="ATSMovieBas">
-        <id property="movId"                       	column="mov_Id" />
+        <id property="movId"                       	column="mov_id" />
         <result property="movName"             		column="mov_name" />
         <result property="mins"             		column="mins" />
         <result property="playCnt"               	column="play_cnt" />
@@ -25,12 +25,15 @@
         <result property="P720"              		column="720P" />
         <result property="P1080"              		column="1080P" />
         <result property="movDesc"              	column="mov_desc" />
+        <result property="movProvider"              column="mov_provider" typeHandler="BooleanOneZeroTypeHandler"/>
         <result property="isMosaic"              	column="is_mosaic" typeHandler="BooleanOneZeroTypeHandler" />
         <result property="movScore"              	column="mov_score" />
         <result property="giftTotal"              	column="gift_total" />
-<!--         <result property="movSaving"              	column="mov_saving" /> -->
         <result property="showYn"              		column="show_yn" typeHandler="BooleanOneZeroTypeHandler" />
         <result property="showOrder"              	column="show_order" />
+        <result property="recommendDate"           	column="recommend_date" />
+        <result property="recommendDesc"           	column="recommend_desc" />
+        <result property="vipFlag"              	column="vip_flag" typeHandler="BooleanOneZeroTypeHandler"/>
         <result property="gmtCreateId"              column="gmt_create_Id" />
         <result property="gmtCreate"              	column="gmt_create" />
         <result property="modId"              		column="mod_id" />
@@ -60,6 +63,18 @@
     </resultMap>
 
 	
+	<resultMap id="liveRoomRankingResultMap" type="ATSLiveRoomRanking">
+        <id property="roomId"                       	column="room_id" />
+        <result property="userId"             			column="user_id" />
+        <result property="typeCode"             		column="type_code"/>
+        <result property="statusCode"             		column="status_code"/>
+        <result property="thumbnailUrl"               	column="thumbnail_url" />
+        <result property="regDt"             			column="reg_dt" />
+        <result property="publishTime"             		column="publish_time" />
+        <result property="joinedCount"             		column="joined_count" />
+    </resultMap>
+
+	
 	<resultMap id="SearchTxnResultMap" type="ATSMovieSearchTxn">
         <id property="srchIdx"                       	column="srch_idx" />
         <result property="srchWord"             		column="srch_word" />
@@ -70,7 +85,7 @@
 	
     
     <select id="selectViewRankingList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
-        SELECT bas.mov_Id,
+        SELECT bas.mov_id,
 			   bas.mov_name,
 			   bas.mins,
 			   bas.play_cnt,
@@ -86,6 +101,7 @@
 			   bas.mov_sn,
 			   bas.mov_sn_ori,
 			   bas.mov_type,
+			   bas.mov_provider,
 			   bas.domain,
 			   bas.240P,
 			   bas.360P,
@@ -98,6 +114,9 @@
 			   bas.gift_total,
 			   bas.show_yn,
 			   bas.show_order,
+			   bas.recommend_date,
+			   bas.recommend_desc,
+			   bas.vip_flag,
 			   bas.gmt_create_Id,
 			   bas.gmt_create,
 			   bas.mod_id,
@@ -110,21 +129,20 @@
 				WHERE  1 = 1
 		<if test="type!=null and type==1">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+				AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 *24 * 1
 		]]>
 		</if>
 		<if test="type!=null and type==2">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+				AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 * 24 * 7
 		]]>
 		</if>
 		<if test="type!=null and type==3">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+				AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 * 24 * 30
 		]]>
 		</if> 				
-				AND    access_type = 'view'
-				AND    lang_cd = #{langCd}
+				AND    history_type_code = 'JOIN'
 				GROUP BY mov_Id
 				) hst
 		WHERE   bas.mov_Id = hst.mov_Id
@@ -149,21 +167,20 @@
 				WHERE  1 = 1
 		<if test="type!=null and type==1">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+				AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 *24 * 1
 		]]>
 		</if>
 		<if test="type!=null and type==2">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+				AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 * 24 * 7
 		]]>
 		</if>
 		<if test="type!=null and type==3">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+				AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 * 24 * 30
 		]]>
 		</if> 				
-				AND    access_type = 'view'
-				AND    lang_cd = #{langCd}
+				AND    history_type_code = 'JOIN'
 				GROUP BY mov_Id
 				) hst
 		WHERE   bas.mov_Id = hst.mov_Id
@@ -171,7 +188,7 @@
     
     
     <select id="selectNewRankingList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
-        SELECT bas.mov_Id,
+        SELECT bas.mov_id,
 			   bas.mov_name,
 			   bas.mins,
 			   bas.play_cnt,
@@ -187,6 +204,7 @@
 			   bas.mov_sn,
 			   bas.mov_sn_ori,
 			   bas.mov_type,
+			   bas.mov_provider,
 			   bas.domain,
 			   bas.240P,
 			   bas.360P,
@@ -199,6 +217,9 @@
 			   bas.gift_total,
 			   bas.show_yn,
 			   bas.show_order,
+			   bas.recommend_date,
+			   bas.recommend_desc,
+			   bas.vip_flag,
 			   bas.gmt_create_Id,
 			   bas.gmt_create,
 			   bas.mod_id,
@@ -211,41 +232,40 @@
 				WHERE  1 = 1
 		<if test="type!=null and type==1">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+				AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 *24 * 1
 		]]>
 		</if>
 		<if test="type!=null and type==2">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+				AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 * 24 * 7
 		]]>
 		</if>
 		<if test="type!=null and type==3">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+				AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 * 24 * 30
 		]]>
 		</if> 				
-				AND    access_type = 'view'
-				AND    lang_cd = #{langCd}
+				AND    history_type_code = 'JOIN'
 				GROUP BY mov_Id
 				) hst
 		WHERE   1 = 1
 		<if test="type!=null and type==1">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+				AND    TIMESTAMPDIFF(second, bas.gmt_create, NOW()) <= 60 * 60 *24 * 1
 		]]>
 		</if>
 		<if test="type!=null and type==2">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+				AND    TIMESTAMPDIFF(second, bas.gmt_create, NOW()) <= 60 * 60 * 24 * 7
 		]]>
 		</if>
 		<if test="type!=null and type==3">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+				AND    TIMESTAMPDIFF(second, bas.gmt_create, NOW()) <= 60 * 60 * 24 * 30
 		]]>
 		</if>
 		AND     bas.mov_Id = hst.mov_Id
-		order by hst.viewCnt
+		ORDER BY hst.viewCnt DESC
 		
 		<if test="pageSize!=null and pageSize!=0">
 		LIMIT  #{pageSize} 
@@ -266,37 +286,36 @@
 				WHERE  1 = 1
 		<if test="type!=null and type==1">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+				AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 *24 * 1
 		]]>
 		</if>
 		<if test="type!=null and type==2">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+				AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 * 24 * 7
 		]]>
 		</if>
 		<if test="type!=null and type==3">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+				AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 * 24 * 30
 		]]>
 		</if> 				
-				AND    access_type = 'view'
-				AND    lang_cd = #{langCd}
+				AND    history_type_code = 'JOIN'
 				GROUP BY mov_Id
 				) hst
 		WHERE   1 = 1
 		<if test="type!=null and type==1">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+				AND    TIMESTAMPDIFF(second, bas.gmt_create, NOW()) <= 60 * 60 *24 * 1
 		]]>
 		</if>
 		<if test="type!=null and type==2">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+				AND    TIMESTAMPDIFF(second, bas.gmt_create, NOW()) <= 60 * 60 * 24 * 7
 		]]>
 		</if>
 		<if test="type!=null and type==3">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+				AND    TIMESTAMPDIFF(second, bas.gmt_create, NOW()) <= 60 * 60 * 24 * 30
 		]]>
 		</if> 
 		AND     bas.mov_Id = hst.mov_Id
@@ -304,7 +323,7 @@
     
     
     <select id="selectLusirRankingList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
-        SELECT bas.mov_Id,
+        SELECT bas.mov_id,
 			   bas.mov_name,
 			   bas.mins,
 			   bas.play_cnt,
@@ -320,6 +339,7 @@
 			   bas.mov_sn,
 			   bas.mov_sn_ori,
 			   bas.mov_type,
+			   bas.mov_provider,
 			   bas.domain,
 			   bas.240P,
 			   bas.360P,
@@ -332,6 +352,9 @@
 			   bas.gift_total,
 			   bas.show_yn,
 			   bas.show_order,
+			   bas.recommend_date,
+			   bas.recommend_desc,
+			   bas.vip_flag,
 			   bas.gmt_create_Id,
 			   bas.gmt_create,
 			   bas.mod_id,
@@ -344,20 +367,20 @@
 				WHERE  1 = 1
 		<if test="type!=null and type==1">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+				AND    TIMESTAMPDIFF(second, reaction_dt, NOW()) <= 60 * 60 *24 * 1
 		]]>
 		</if>
 		<if test="type!=null and type==2">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+				AND    TIMESTAMPDIFF(second, reaction_dt, NOW()) <= 60 * 60 * 24 * 7
 		]]>
 		</if>
 		<if test="type!=null and type==3">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+				AND    TIMESTAMPDIFF(second, reaction_dt, NOW()) <= 60 * 60 * 24 * 30
 		]]>
 		</if> 				
-				AND    reaction_type = 'up'
+				AND    reaction_type = 'UP'
 				GROUP BY mov_Id
 				) txn
 		WHERE   bas.mov_Id = txn.mov_Id
@@ -382,20 +405,20 @@
 				WHERE  1 = 1
 		<if test="type!=null and type==1">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+				AND    TIMESTAMPDIFF(second, reaction_dt, NOW()) <= 60 * 60 *24 * 1
 		]]>
 		</if>
 		<if test="type!=null and type==2">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+				AND    TIMESTAMPDIFF(second, reaction_dt, NOW()) <= 60 * 60 * 24 * 7
 		]]>
 		</if>
 		<if test="type!=null and type==3">
 		<![CDATA[				
-				AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+				AND    TIMESTAMPDIFF(second, reaction_dt, NOW()) <= 60 * 60 * 24 * 30
 		]]>
 		</if> 				
-				AND    reaction_type = 'up'
+				AND    reaction_type = 'UP'
 				GROUP BY mov_Id
 				) txn
 		WHERE   bas.mov_Id = txn.mov_Id
@@ -403,7 +426,7 @@
     
     
     <select id="selectTucaoRankingList" parameterType="java.util.HashMap" resultMap="MovieResultMap">
-        SELECT bas.mov_Id,
+        SELECT bas.mov_id,
 			   bas.mov_name,
 			   bas.mins,
 			   bas.play_cnt,
@@ -419,6 +442,7 @@
 			   bas.mov_sn,
 			   bas.mov_sn_ori,
 			   bas.mov_type,
+			   bas.mov_provider,
 			   bas.domain,
 			   bas.240P,
 			   bas.360P,
@@ -431,6 +455,9 @@
 			   bas.gift_total,
 			   bas.show_yn,
 			   bas.show_order,
+			   bas.recommend_date,
+			   bas.recommend_desc,
+			   bas.vip_flag,
 			   bas.gmt_create_Id,
 			   bas.gmt_create,
 			   bas.mod_id,
@@ -442,26 +469,26 @@
 				FROM 
 					   (
 						SELECT mov_Id,
-							   SUM(case WHEN reaction_type = 'up' THEN 1 ELSE 0 END) upCnt,
-							   SUM(case WHEN reaction_type = 'diss' THEN 1 ELSE 0 END) dissCnt
+							   SUM(case WHEN reaction_type = 'UP' THEN 1 ELSE 0 END) upCnt,
+							   SUM(case WHEN reaction_type = 'DISS' THEN 1 ELSE 0 END) dissCnt
 						FROM   movie_reaction_txn
 						WHERE  1 = 1
 				<if test="type!=null and type==1">
 				<![CDATA[				
-						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+						AND    TIMESTAMPDIFF(second, reaction_dt, NOW()) <= 60 * 60 *24 * 1
 				]]>
 				</if>
 				<if test="type!=null and type==2">
 				<![CDATA[				
-						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+						AND    TIMESTAMPDIFF(second, reaction_dt, NOW()) <= 60 * 60 * 24 * 7
 				]]>
 				</if>
 				<if test="type!=null and type==3">
 				<![CDATA[				
-						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+						AND    TIMESTAMPDIFF(second, reaction_dt, NOW()) <= 60 * 60 * 24 * 30
 				]]>
 				</if> 
-						AND    reaction_type IN ('up','diss')
+						AND    reaction_type IN ('UP','DISS')
 						GROUP BY mov_Id
 					   ) reaction
 			   ) txn
@@ -486,26 +513,26 @@
 				FROM 
 					   (
 						SELECT mov_Id,
-							   SUM(case WHEN reaction_type = 'up' THEN 1 ELSE 0 END) upCnt,
-							   SUM(case WHEN reaction_type = 'diss' THEN 1 ELSE 0 END) dissCnt
+							   SUM(case WHEN reaction_type = 'UP' THEN 1 ELSE 0 END) upCnt,
+							   SUM(case WHEN reaction_type = 'DISS' THEN 1 ELSE 0 END) dissCnt
 						FROM   movie_reaction_txn
 						WHERE  1 = 1
 				<if test="type!=null and type==1">
 				<![CDATA[				
-						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+						AND    TIMESTAMPDIFF(second, reaction_dt, NOW()) <= 60 * 60 *24 * 1
 				]]>
 				</if>
 				<if test="type!=null and type==2">
 				<![CDATA[				
-						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+						AND    TIMESTAMPDIFF(second, reaction_dt, NOW()) <= 60 * 60 * 24 * 7
 				]]>
 				</if>
 				<if test="type!=null and type==3">
 				<![CDATA[				
-						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+						AND    TIMESTAMPDIFF(second, reaction_dt, NOW()) <= 60 * 60 * 24 * 30
 				]]>
 				</if> 
-						AND    reaction_type IN ('up','diss')
+						AND    reaction_type IN ('UP','DISS')
 						GROUP BY mov_Id
 					   ) reaction
 			   ) txn
@@ -545,28 +572,27 @@
 						WHERE  1 = 1
 				<if test="type!=null and type==1">
 				<![CDATA[				
-						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+						AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 *24 * 1
 				]]>
 				</if>
 				<if test="type!=null and type==2">
 				<![CDATA[				
-						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+						AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 * 24 * 7
 				]]>
 				</if>
 				<if test="type!=null and type==3">
 				<![CDATA[				
-						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+						AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 * 24 * 30
 				]]>
 				</if> 
-						AND    access_type = 'view'
-						AND    lang_cd = #{langCd}
+						AND    history_type_code = 'JOIN'
 						GROUP BY mov_Id
 					   ) hst, 
 					   movie_actor_rel rel	
 				WHERE  hst.mov_Id = rel.mov_Id
 				GROUP BY rel.actor_idx
 				) hst
-		AND     bas.mov_Id = hst.mov_Id
+		WHERE   bas.actor_idx = hst.actor_idx
 		ORDER BY hst.vieCnt
 		
 		<if test="pageSize!=null and pageSize!=0">
@@ -590,29 +616,116 @@
 						WHERE  1 = 1
 				<if test="type!=null and type==1">
 				<![CDATA[				
-						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 *24 * 1
+						AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 *24 * 1
 				]]>
 				</if>
 				<if test="type!=null and type==2">
 				<![CDATA[				
-						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 7
+						AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 * 24 * 7
 				]]>
 				</if>
 				<if test="type!=null and type==3">
 				<![CDATA[				
-						AND    TIMESTAMPDIFF(second, access_dt, NOW()) <= 60 * 60 * 24 * 30
+						AND    TIMESTAMPDIFF(second, reg_dt, NOW()) <= 60 * 60 * 24 * 30
 				]]>
 				</if> 
-						AND    access_type = 'view'
-						AND    lang_cd = #{langCd}
+						AND    history_type_code = 'JOIN'
 						GROUP BY mov_Id
 					   ) hst, 
 					   movie_actor_rel rel	
 				WHERE  hst.mov_Id = rel.mov_Id
 				GROUP BY rel.actor_idx
 				) hst
-		AND     bas.mov_Id = hst.mov_Id
+		WHERE   bas.actor_idx = hst.actor_idx
     </select>
+    
+    
+    
+    <select id="selectLiveRoomRankingList" parameterType="java.util.HashMap" resultMap="liveRoomRankingResultMap">
+        SELECT room.room_id,
+			   room.user_id,
+			   room.type_code,
+			   room.status_code,
+			   room.thumbnail_url,
+			   room.reg_dt,
+			   IF((
+					SELECT status_code
+					FROM ats_live_room_state
+					WHERE room_id = room.room_id
+					AND room_state_seq = (
+											SELECT MAX(room_state_seq)
+											FROM ats_live_room_state
+											WHERE room_id = room.room_id
+										 )
+					)='ONAIR',
+					TIMESTAMPDIFF(MINUTE, ( SELECT reg_dt
+											FROM ats_live_room_state
+											WHERE room_id = room.room_id
+											AND room_state_seq = (
+																	SELECT MAX(room_state_seq)
+																	FROM ats_live_room_state
+																	WHERE room_id = room.room_id
+																 )
+										  ), NOW()
+								  ),
+					NULL
+				) AS publish_time,
+			   COUNT(hst.room_id) AS joined_count
+		FROM   ats_live_room room 
+		LEFT OUTER JOIN 
+			   ats_live_room_user_hst hst
+		ON     room.room_id = hst.room_id
+		<if test="type!=null and type==1">
+		<![CDATA[				
+		AND    TIMESTAMPDIFF(second, hst.reg_dt, NOW()) <= 60 * 60 *24 * 1
+		]]>
+		</if>
+		<if test="type!=null and type==2">
+		<![CDATA[				
+		AND    TIMESTAMPDIFF(second, hst.reg_dt, NOW()) <= 60 * 60 * 24 * 7
+		]]>
+		</if>
+		<if test="type!=null and type==3">
+		<![CDATA[				
+		AND    TIMESTAMPDIFF(second, hst.reg_dt, NOW()) <= 60 * 60 * 24 * 30
+		]]>
+		</if> 
+		GROUP BY room.room_id	
+		ORDER BY joined_count DESC
+		
+		<if test="pageSize!=null and pageSize!=0">
+		LIMIT  #{pageSize} 
+		</if>
+		<if test="page!=null and page!=0">
+        OFFSET #{page}
+		</if>
+		
+    </select>
+    
+    <select id="selectLiveRoomRankingTotalCount" parameterType="java.util.HashMap" resultType="int">
+        SELECT COUNT(1)
+		FROM   ats_live_room room 
+		LEFT OUTER JOIN 
+			   ats_live_room_user_hst hst
+		ON     room.room_id = hst.room_id
+		<if test="type!=null and type==1">
+		<![CDATA[				
+		AND    TIMESTAMPDIFF(second, hst.reg_dt, NOW()) <= 60 * 60 *24 * 1
+		]]>
+		</if>
+		<if test="type!=null and type==2">
+		<![CDATA[				
+		AND    TIMESTAMPDIFF(second, hst.reg_dt, NOW()) <= 60 * 60 * 24 * 7
+		]]>
+		</if>
+		<if test="type!=null and type==3">
+		<![CDATA[				
+		AND    TIMESTAMPDIFF(second, hst.reg_dt, NOW()) <= 60 * 60 * 24 * 30
+		]]>
+		</if> 
+    </select>
+    
+    
     
     
     <select id="selectSearchHotList" parameterType="java.util.HashMap" resultMap="ActorResultMap">

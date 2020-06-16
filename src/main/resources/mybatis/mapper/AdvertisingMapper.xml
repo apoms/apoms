@@ -14,7 +14,6 @@
 <!--         <result property="gameType"                 column="" /> -->
 <!--         <result property="iconUrl"                	column="" /> -->
         
-        <result property="typeId"                	column="type_id" />
         <result property="linkAddr"                	column="link_addr" />
         <result property="linkType"                	column="link_type" />
         <result property="linkTypeCn"               column="link_type_cn" />
@@ -34,7 +33,7 @@
     </resultMap>
     
 
-    <select id="selectAdsList" parameterType="int" resultMap="advertisingResultMap">
+    <select id="selectAdsList" parameterType="ATSLangCode" resultMap="advertisingResultMap">
         SELECT  base.ad_id,
 				base.ad_name,
 				base.ad_show_time,
@@ -42,22 +41,23 @@
 				base.ad_weight,
 				base.channel_type,
 				base.link_type,
-				FNC_LANG_CHANGE('advertising_bas','link_type',image.lang_cd) link_type_cn,
+				'' AS link_type_cn,
 				base.module_id,
 				base.status,
 				base.show_order,
-				image.type_id,
 				image.thumbnail,
 				image.link_addr,
 				rel.show_location,
-				FNC_LANG_CHANGE('advertising_show_rel','show_location',image.lang_cd) show_location_cn
+				ctg.show_location_name AS show_location_cn
 		FROM 	advertising_bas base,
 			  	advertising_image image,
-			  	advertising_show_rel rel
+			  	advertising_show_rel rel,
+			  	advertising_show_ctg ctg
 		WHERE 	1 = 1
 		AND		base.ad_id = image.ad_id
 		AND   	base.ad_id = rel.ad_id
-		and     image.lang_cd = #{langCd}
+		AND      rel.show_location = ctg.show_location
+		AND     image.lang_cd = #{langCd}
     </select>
     
     

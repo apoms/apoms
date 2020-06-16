@@ -28,25 +28,27 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.aetherit.ats.ws.application.support.FileStorageProperties;
+import io.aetherit.ats.ws.exception.CanNotFoundTypeException;
 import io.aetherit.ats.ws.exception.FileStorageException;
 import io.aetherit.ats.ws.model.ATSResultSet;
 import io.aetherit.ats.ws.model.ATSReturnSet;
 import io.aetherit.ats.ws.model.ATSSimpleUser;
 import io.aetherit.ats.ws.model.dao.ATSLiveGiftBas;
+import io.aetherit.ats.ws.model.dao.ATSLiveGiftRel;
 import io.aetherit.ats.ws.model.dao.ATSLiveRoom;
 import io.aetherit.ats.ws.model.dao.ATSLiveRoomUserHst;
 import io.aetherit.ats.ws.model.dao.ATSServerRoom;
-import io.aetherit.ats.ws.model.dao.ATSUserBas;
+import io.aetherit.ats.ws.model.live.ATSLiveRoomCurrent;
 import io.aetherit.ats.ws.model.live.ATSLiveRoomPatch;
 import io.aetherit.ats.ws.model.live.ATSLiveRoomServer;
 import io.aetherit.ats.ws.model.type.ATSLangCode;
+import io.aetherit.ats.ws.model.type.ATSPointType;
 import io.aetherit.ats.ws.model.type.ATSUserType;
 import io.aetherit.ats.ws.service.AuthenticationService;
 import io.aetherit.ats.ws.service.LiveRoomService;
 import io.aetherit.ats.ws.service.UserService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/api/v1/liveroom")
@@ -54,7 +56,7 @@ public class LiveRoomController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(LiveRoomController.class);
 	
-	private static final long thumnailSizeLimit = 1048576;
+	private static final long thumbnailSizeLimit = 1048576;
 	
 	private LiveRoomService liveRoomService;
 	private UserService userService;
@@ -78,7 +80,7 @@ public class LiveRoomController {
     
     @GetMapping("")
     public ResponseEntity<Object> getLiveRoomList(HttpServletRequest httpRequest, @RequestHeader(value="lang-code") ATSLangCode langCd) {
-        List<ATSLiveRoomServer> liveRoomList = liveRoomService.getLiveRoomList(langCd);
+        List<ATSLiveRoomCurrent> liveRoomList = liveRoomService.getLiveRoomList(langCd);
          
         return new ResponseEntity<Object>(ATSReturnSet.builder()
 									      .data(ATSResultSet.builder()
@@ -87,6 +89,21 @@ public class LiveRoomController {
 										        .msg("")
 										        .success(true)
 										        .data(liveRoomList)
+										        .build())
+									      .build(), HttpStatus.OK);
+    }
+    
+    @GetMapping("/ranking")
+    public ResponseEntity<Object> getLiveRoomRankingList(HttpServletRequest httpRequest, @RequestHeader(value="lang-code") ATSLangCode langCd) {
+        List<ATSLiveRoomCurrent> liveRoomRankingList = liveRoomService.getLiveRoomRankingList(langCd);
+         
+        return new ResponseEntity<Object>(ATSReturnSet.builder()
+									      .data(ATSResultSet.builder()
+										        .code(0)
+										        .enumCode("SUCCESS")
+										        .msg("")
+										        .success(true)
+										        .data(liveRoomRankingList)
 										        .build())
 									      .build(), HttpStatus.OK);
     }
@@ -149,11 +166,11 @@ public class LiveRoomController {
     @ApiImplicitParams({
         @ApiImplicitParam(name = "x-auth-token", value = "", required = false, dataType = "String", paramType = "header")
     })
-    @PostMapping("/thumnail")
+    @PostMapping("/thumbnail")
     public ResponseEntity<Void> uploadFile(HttpServletRequest httpServletRequest, @RequestPart("file") MultipartFile file) throws Exception {
     	
     	
-    	if(file.getSize() > thumnailSizeLimit) {
+    	if(file.getSize() > thumbnailSizeLimit) {
     		throw new FileStorageException("The file size cannot exceed 1 megabyte.");
     	}
     	
@@ -183,16 +200,16 @@ public class LiveRoomController {
 */       
     	
     	String fileName = UUID.randomUUID().toString()+"."+FilenameUtils.getExtension(file.getOriginalFilename());
-    	String thrnnailPath = fileStorageProperties.getThumnailUrl();
-    	String thumnailUrl = thrnnailPath + "/" + liveRoomServer.getLiveRoom().getRoomId() + "/" + fileName;
+    	String thrnnailPath = fileStorageProperties.getThumbnailUrl();
+    	String thumbnailUrl = thrnnailPath + "/" + liveRoomServer.getLiveRoom().getRoomId() + "/" + fileName;
     	
     	ATSLiveRoom liveRoom = ATSLiveRoom.builder()
     								.roomId(liveRoomServer.getLiveRoom().getRoomId())
-    								.thumnailUrl(thumnailUrl)
+    								.thumbnailUrl(thumbnailUrl)
     								.build();
     	
     	
-    	liveRoomService.uploadThumnailObject(liveRoom,file,fileName,thumnailUrl);
+    	liveRoomService.uploadThumbnailObject(liveRoom,file,fileName,thumbnailUrl);
         
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -218,8 +235,14 @@ public class LiveRoomController {
     
     
     @GetMapping("/gifts")
-    public ResponseEntity<Object> getGiftList(HttpServletRequest httpRequest, @RequestHeader(value="lang-code") ATSLangCode langCd) {
-        List<ATSLiveGiftBas> giftList = liveRoomService.getGiftList(langCd);
+    public ResponseEntity<Object> getGiftList(HttpServletRequest httpRequest, @RequestHeader(value="lang-code") ATSLangCode langCd
+    																		, @RequestParam(value = "type", required=false, defaultValue="") String type) {
+    	
+    	HashMap<String,Object> map = new HashMap<String,Object>();
+    	map.put("langCd", langCd);
+    	map.put("type", type);
+    	
+        List<ATSLiveGiftBas> giftList = liveRoomService.getGiftList(map);
          
 //        return new ResponseEntity<Object>(ATSReturnSet.builder()
 //									      .data(ATSResultSet.builder()
@@ -232,6 +255,32 @@ public class LiveRoomController {
 //									      .build(), HttpStatus.OK);
         
         return new ResponseEntity<Object>(giftList,HttpStatus.OK);
+    }
+    
+    
+    @GetMapping("/gifts/{idx}")
+    public ResponseEntity<Object> getGift(HttpServletRequest httpRequest, @PathVariable(value="idx", required=true) int idx) {
+    	ATSLiveGiftBas gift = liveRoomService.getGift(idx);
+    	
+//        return new ResponseEntity<Object>(ATSReturnSet.builder()
+//									      .data(ATSResultSet.builder()
+//										        .code(0)
+//										        .enumCode("SUCCESS")
+//										        .msg(giftList.size()+"")
+//										        .success(true)
+//										        .data(gift)
+//										        .build())
+//									      .build(), HttpStatus.OK);
+    	
+    	return new ResponseEntity<Object>(gift,HttpStatus.OK);
+    }
+    
+    
+    @PostMapping("/donate")
+    public ResponseEntity<Void> setDonate(HttpServletRequest httpRequest, @RequestBody ATSLiveGiftRel liveGiftRel) {
+        liveRoomService.setDonate(liveGiftRel);
+        
+        return new ResponseEntity<>(HttpStatus.OK);
     }
     
 }

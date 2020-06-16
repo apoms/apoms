@@ -1,5 +1,8 @@
-package io.aetherit.ats.ws.model.dao;
+package io.aetherit.ats.ws.model.movie;
 
+import java.util.List;
+
+import io.aetherit.ats.ws.model.dao.ATSMovieChannelCtg;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ATSMovieChannelCtg {
+public class ATSMovieChannel {
 	private int id;
     private int channelType;
     private boolean hasSelection;
@@ -18,4 +21,5 @@ public class ATSMovieChannelCtg {
     private int showType;
     private int showOrder;
     private boolean userYn;
+    private List<ATSMovieChannelCtg> subChannel;
 }

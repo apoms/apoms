@@ -1,5 +1,6 @@
 package io.aetherit.ats.ws.service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.aetherit.ats.ws.exception.AtsCustomException;
 import io.aetherit.ats.ws.exception.CanNotFoundUserException;
@@ -20,6 +22,7 @@ import io.aetherit.ats.ws.model.ATSUser;
 import io.aetherit.ats.ws.model.ATSUserSignUp;
 import io.aetherit.ats.ws.model.ATSVerify;
 import io.aetherit.ats.ws.model.common.ATSFollower;
+import io.aetherit.ats.ws.model.dao.ATSUserDetail;
 import io.aetherit.ats.ws.model.dao.ATSUserRel;
 import io.aetherit.ats.ws.model.type.ATSUserStatus;
 import io.aetherit.ats.ws.model.type.ATSUserType;
@@ -84,12 +87,21 @@ public class UserService {
     }
 
     /**
-     * get user info 
+     * get user one
      * @param id
      * @return
      */
-    public ATSUser getUser(long id) {
-        return repository.selectUser(id);
+    public ATSUser getUser(long userId) {
+        return repository.selectUser(userId);
+    }
+    
+    /**
+     * get user Detail 
+     * @param id
+     * @return
+     */
+    public ATSUserDetail getUserDetail(long id) {
+        return repository.selectUserDetail(id);
     }
 
     /**
@@ -124,6 +136,7 @@ public class UserService {
      * @param userSignUp
      * @return
      */
+    @Transactional
     public ATSUser createNewUser(ATSUserSignUp userSignUp) {
     	
     	ATSUser user = userSignUp.getUser();
@@ -155,6 +168,7 @@ public class UserService {
 		
 		//PRIORITY INSERT USER
 		repository.insertUser(user);
+		repository.insertUserDtl(user);
 		
 		try {
 			verifyService.deleteVerify(user.getPhoneNo());
@@ -199,6 +213,14 @@ public class UserService {
     	repository.deleteFollowing(followIdx);
     }
     
+    
+    public void decreaseUserPoint(long userId, BigDecimal point) {
+    	repository.decreaseUserPoint(userId, point);
+    }
+    
+    public void increaseUserPoint(long userId, BigDecimal point) {
+    	repository.increaseUserPoint(userId, point);
+    }
     
     
     /**

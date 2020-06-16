@@ -30,8 +30,8 @@ public class ATSMovieActorBas {
     private String cup;
     private BigDecimal starLevel;
     
-    private String regId;
+    private long regId;
     private LocalDateTime regDt;
-    private String modId;
+    private long modId;
     private LocalDateTime modDt;
 }

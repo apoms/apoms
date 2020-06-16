@@ -4,38 +4,90 @@
         <id property="userId"                       column="user_id" />
         <result property="password"             	column="pwd" />
         <result property="nickName"                 column="nick_name" />
-        <result property="cntryCode"                 column="cntry_code" />
+        <result property="cntryCode"                column="cntry_code" />
         <result property="phoneNo"             		column="phone_no" />
         <result property="type"                 	column="user_type" />
         <result property="statusCode"               column="status_code" />
+        <result property="pointAmt"                 column="point_amt" />
         <result property="regDt"      				column="reg_dt" />
+        <result property="modDt"      				column="mod_dt" />
+    </resultMap>
+    
+    <resultMap id="userDetailResultMap" type="ATSUserDetail">
+        <id property="userId"                       column="user_id" />
+        <result property="uploadUserIconDomain"     column="upload_user_icon_domain" />
+        <result property="uploadUserIcon"           column="upload_user_icon" />
+        <result property="userDesc"                 column="user_desc" />
+        <result property="userStatus"               column="user_status" />
+        <result property="uploadUserFans"           column="upload_user_fans" />
+        <result property="collectionCnt"            column="collection_cnt" />
+        <result property="followerCnt"              column="follower_cnt" />
+        <result property="pointAmt"                column="point_amt" />
+        <result property="uploaderInviteCode"       column="uploader_invite_code" />
+        <result property="gender"             		column="gender" />
+        <result property="age"             			column="age" />
+        <result property="career"             		column="career" />
+        <result property="marriage"             	column="marriage" />
+        <result property="selectLang"             	column="select_lang" />
+        <result property="regId"                 	column="reg_id" />
+        <result property="regDt"               		column="reg_dt" />
+        <result property="modId"      				column="mod_id" />
         <result property="modDt"      				column="mod_dt" />
     </resultMap>
     
     <resultMap id="followerResultMap" type="ATSFollower">
         <id property="userId"                       column="user_id" />
         <result property="nickName"                 column="nick_name" />
-        <result property="cntryCode"                 column="cntry_code" />
+        <result property="cntryCode"                column="cntry_code" />
         <result property="phoneNo"             		column="phone_no" />
-        <result property="userType"                 	column="user_type" />
+        <result property="userType"                 column="user_type" />
         <result property="statusCode"               column="status_code" />
         <result property="relType"               	column="rel_type" />
-        <result property="relDt"               	column="rel_dt" />
+        <result property="relDt"               		column="rel_dt" />
         <result property="regDt"      				column="reg_dt" />
         <result property="modDt"      				column="mod_dt" />
     </resultMap>
 
+
     <select id="selectUser" parameterType="long" resultMap="userResultMap">
+        SELECT bas.user_id,
+        	   bas.pwd,
+        	   bas.nick_name,
+        	   bas.cntry_code,
+       	       bas.phone_no,
+               bas.user_type,
+               bas.status_code,
+               dtl.point_amt,
+               bas.reg_dt,
+               bas.mod_dt
+        FROM   user_bas bas,
+        	   user_dtl dtl
+        WHERE  bas.user_id = #{userId}
+        AND	   bas.user_id = dtl.user_id
+    </select>
+    
+    
+    <select id="selectUserDetail" parameterType="long" resultMap="userDetailResultMap">
         SELECT user_id,
-        	   pwd,
-        	   nick_name,
-        	   cntry_code,
-       	       phone_no,
-               user_type,
-               status_code,
-               reg_dt,
-               mod_dt
-        FROM   user_bas
+			   upload_user_icon_domain,
+			   upload_user_icon,
+			   user_desc,
+			   user_status,
+			   upload_user_fans,
+			   collection_cnt,
+			   follower_cnt,
+			   point_amt,
+			   uploader_invite_code,
+			   gender,
+			   age,
+			   career,
+			   marriage,
+			   select_lang,
+			   reg_id,
+			   reg_dt,
+			   mod_id,
+			   mod_dt
+        FROM   user_dtl
         WHERE  user_id = #{userId}
     </select>
 
@@ -89,11 +141,11 @@
         FROM   user_bas
         WHERE  user_type = #{type}
         ORDER BY reg_dt DESC
-        <if test="rowsPerPage!=null and rowsPerPage!=0">
-		LIMIT  #{rowsPerPage} 
+        <if test="pageSize!=null and pageSize!=0">
+		LIMIT  #{pageSize} 
 		</if>
-		<if test="page!=null and page!=0">
-        OFFSET #{page}
+		<if test="pageNo!=null and pageNo!=0">
+        OFFSET #{pageNo}
 		</if>
     </select>
     
@@ -129,6 +181,27 @@
             #{type},
             #{statusCode},
             NOW(),
+            NOW()
+        )
+    </insert>
+    
+    <insert id="insertUserDtl" parameterType="ATSUser" >
+        INSERT INTO user_dtl 
+        (
+        	user_id,
+       	    point_amt,
+       	    reg_id,
+       	    reg_dt,
+    	    mod_id,
+            mod_dt
+        )
+        VALUES 
+        (
+            #{userId},
+            0,
+            #{userId},
+            NOW(),
+            #{userId},
             NOW()
         )
     </insert>
@@ -202,5 +275,18 @@
 		FROM   user_rel
 		WHERE  follow_idx = #{followIdx}
     </delete>
+    
+    
+    <update id="decreaseUserPoint" >
+    	UPDATE user_dtl
+    	SET	   point_amt = point_amt - #{point}
+		WHERE  user_id = #{userId}
+    </update>
+    
+    <update id="increaseUserPoint" >
+    	UPDATE user_dtl
+    	SET	   point_amt = point_amt + #{point}
+		WHERE  user_id = #{userId}
+    </update>
     
 </mapper>

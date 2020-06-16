@@ -6,6 +6,7 @@ import java.util.List;
 import io.aetherit.ats.ws.model.dao.ATSMovieActorBas;
 import io.aetherit.ats.ws.model.dao.ATSMovieBas;
 import io.aetherit.ats.ws.model.dao.ATSMovieSearchTxn;
+import io.aetherit.ats.ws.model.live.ATSLiveRoomRanking;
 
 public interface RankingMapper {
 	List<ATSMovieBas> selectViewRankingList(HashMap<String,Object> map);
@@ -22,6 +23,9 @@ public interface RankingMapper {
 	
 	List<ATSMovieActorBas> selectRankingActorList(HashMap<String,Object> map);
 	int selectRankingActorTotalCount(HashMap<String,Object> map);
+	
+	List<ATSLiveRoomRanking> selectLiveRoomRankingList(HashMap<String,Object> map);
+	int selectLiveRoomRankingTotalCount(HashMap<String,Object> map);
 	
 	List<ATSMovieSearchTxn> selectSearchHotList(HashMap<String,Object> map);
 	

@@ -1,5 +1,6 @@
 package io.aetherit.ats.ws.controller;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ import io.aetherit.ats.ws.model.ATSResultSet;
 import io.aetherit.ats.ws.model.ATSReturnSet;
 import io.aetherit.ats.ws.model.common.ATSSelection;
 import io.aetherit.ats.ws.model.dao.ATSMovieChannelCtg;
+import io.aetherit.ats.ws.model.movie.ATSMovieChannel;
 import io.aetherit.ats.ws.model.type.ATSLangCode;
 import io.aetherit.ats.ws.service.ChannelService;
 
@@ -52,6 +54,7 @@ public class ChannelController {
     }
     
     
+    
     @GetMapping("/home/selection/query")
     public ResponseEntity<Object> getSelectionChannelList(HttpServletRequest httpRequest, @RequestHeader(value="lang-code") ATSLangCode langCd) {
         List<ATSSelection> selectionChannelList = channelService.getSelectionChannelList(langCd);
@@ -80,6 +83,22 @@ public class ChannelController {
 										        .msg("true")
 										        .success(true)
 										        .data(selectionChannelList)
+										        .build())
+									      .build(), HttpStatus.OK);
+    }
+    
+    
+    @GetMapping("/home/channelNoUser")
+    public ResponseEntity<Object> getAllChannelList(HttpServletRequest httpRequest,@RequestHeader(value="lang-code") ATSLangCode langCd) {
+        List<ATSMovieChannel> allChannelList = channelService.getAllChannelList(langCd);
+         
+        return new ResponseEntity<Object>(ATSReturnSet.builder()
+									      .data(ATSResultSet.builder()
+										        .code(0)
+										        .enumCode("SUCCESS")
+										        .msg("true")
+										        .success(true)
+										        .data(allChannelList)
 										        .build())
 									      .build(), HttpStatus.OK);
     }

@@ -14,13 +14,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ATSWebrtcServer {
-    private long server_id;
-    private String server_name;
-    private int max_users;
-    private boolean activation_flag;
+    private long serverId;
+    private String serverName;
+    private int maxUsers;
+    private boolean activationFlag;
     private String comment;
     private int priority;
-    private String webrtc_url;
-    private LocalDateTime reg_dt;
-    private LocalDateTime mod_dt;
+    private String webrtcUrl;
+    private LocalDateTime regDt;
+    private LocalDateTime modDt;
 }

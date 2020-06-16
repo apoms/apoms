@@ -10,13 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.aetherit.ats.ws.model.ATSResultSet;
 import io.aetherit.ats.ws.model.ATSReturnSet;
 import io.aetherit.ats.ws.model.common.ATSBanner;
+import io.aetherit.ats.ws.model.type.ATSLangCode;
 import io.aetherit.ats.ws.service.AdvertisingService;
 
 @RestController
@@ -35,7 +35,7 @@ public class AdvertisingController {
     
     
     @GetMapping("/banner/list2")
-    public ResponseEntity<Object> getBannerList(HttpServletRequest httpRequest, @RequestParam(value = "langCd", required=true) String langCd) {
+    public ResponseEntity<Object> getBannerList(HttpServletRequest httpRequest, @RequestParam(value = "langCd", required=true) ATSLangCode langCd) {
         List<ATSBanner> ads = advertisingService.getBannerList(langCd);
          
         return new ResponseEntity<Object>(ATSReturnSet.builder()

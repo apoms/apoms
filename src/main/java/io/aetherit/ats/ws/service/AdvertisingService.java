@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import io.aetherit.ats.ws.model.common.ATSAds;
 import io.aetherit.ats.ws.model.common.ATSBanner;
 import io.aetherit.ats.ws.model.dao.ATSAdvertisiong;
+import io.aetherit.ats.ws.model.type.ATSLangCode;
 import io.aetherit.ats.ws.repository.AdvertisingRepository;
 
 @Service
@@ -30,14 +31,14 @@ public class AdvertisingService {
      * @param userId
      * @return
      */
-    public List<ATSBanner> getBannerList(String langCd) {
+    public List<ATSBanner> getBannerList(ATSLangCode langCd) {
     	List<ATSBanner> bannerList = new ArrayList<ATSBanner>();
     	List<ATSAdvertisiong> advertisingList = advertisingRepository.selectAdsList(langCd);
     	
     	for(int i=1;i<=10;i++) {
     		List<ATSAds> ads = new ArrayList<ATSAds>();
     		for(ATSAdvertisiong advertising:advertisingList) {
-        		if(advertising.getTypeId()==i) {
+        		if(advertising.getShowLocation()==i) {
         			ATSAds ad = ATSAds.builder()
         						.adName(advertising.getAdName())
         						.adShowTime(advertising.getAdShowTime())

@@ -1,16 +1,5 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.aetherit.ats.ws.repository.mapper.AdminMapper">
-<!--     <resultMap id="userResultMap" type="ATSUser"> -->
-<!--         <id property="userId"                       column="user_id" /> -->
-<!--         <result property="password"             	column="pwd" /> -->
-<!--         <result property="nickName"                 column="nick_name" /> -->
-<!--         <result property="cntryCode"                 column="cntry_code" /> -->
-<!--         <result property="phoneNo"             		column="phone_no" /> -->
-<!--         <result property="type"                 	column="user_type" /> -->
-<!--         <result property="statusCode"               column="status_code" /> -->
-<!--         <result property="regDt"      				column="reg_dt" /> -->
-<!--         <result property="modDt"      				column="mod_dt" /> -->
-<!--     </resultMap> -->
 
     
     <update id="approvalUserTypeAnchor" parameterType="java.util.HashMap">
@@ -39,6 +28,188 @@
         ;
     </update>
     
+    <insert id="insertMovieBas" parameterType="ATSMovieBas" useGeneratedKeys="true" keyProperty="movId">
+    	INSERT INTO movie_bas
+    	(
+    		mov_id,
+		    mov_name,
+		    mins,
+		    play_cnt,
+		    play_cnt_str,
+		    down_cnt,
+		    has_down,
+		    love_cnt,
+		    has_love,
+		    up_cnt,
+		    has_up,
+		    diss_cnt,
+		    has_diss,
+		    mov_sn,
+		    mov_sn_ori,
+		    mov_type,
+		    mov_provider,
+		    domain,		    
+		    mov_desc,
+		    is_mosaic,
+		    mov_score,
+		    gift_total,
+		    show_yn,
+		    show_order,
+		    recommend_date,
+		    recommend_desc,
+		    vip_flag,
+		    gmt_create_Id,
+		    gmt_create,
+		    mod_id,
+		    mod_dt
+    	)
+    	VALUES 
+        (
+            #{movId},
+            #{movName},
+            #{mins},
+            #{playCnt},
+            #{playCntStr},
+            #{downCnt},
+            #{hasDown, typeHandler=BooleanOneZeroTypeHandler},
+            #{loveCnt},
+            #{hasLove, typeHandler=BooleanOneZeroTypeHandler},
+            #{upCnt},
+            #{hasUp, typeHandler=BooleanOneZeroTypeHandler},
+            #{dissCnt},
+            #{hasDiss, typeHandler=BooleanOneZeroTypeHandler},
+            #{movSn},
+            #{movSnOri},
+            #{movType},
+            #{movProvider, typeHandler=BooleanOneZeroTypeHandler},
+            #{domain},
+            #{movDesc},
+            #{isMosaic, typeHandler=BooleanOneZeroTypeHandler},
+            #{movScore},
+            #{giftTotal},
+            #{showYn, typeHandler=BooleanOneZeroTypeHandler},
+            #{showOrder},
+            #{recommendDate},
+            #{recommendDesc},
+            #{vipFlag, typeHandler=BooleanOneZeroTypeHandler},
+            #{gmtCreateId},
+            now(),
+            #{modId},
+            NOW()
+        )
+    </insert>
     
+    <!-- UPDATE -->
+    <update id="updateMovieBas" parameterType="java.util.HashMap">
+    	UPDATE movie_bas
+			<trim prefix="SET" suffixOverrides=",">
+				<if test="p240			!=null and !p240.equals('')"		>	240P				=#{p240}, </if>
+				<if test="p360			!=null and !p360.equals('')"		>	360P				=#{p360}, </if>
+				<if test="p480			!=null and !p480.equals('')"		>	480P				=#{p480}, </if>
+				<if test="p720			!=null and !p720.equals('')"		>	720P				=#{p720}, </if>
+				<if test="p1080			!=null and !p1080.equals('')"		>	1080P				=#{p1080},</if>
+				<if test="movName		!=null and !movName.equals('')"		>	mov_name			=#{movName},</if>
+				<if test="mins			!=null and !mins.equals('')"		>	mins				=#{mins},</if>
+				<if test="playCnt		!=null "							>	play_cnt			=#{playCnt},</if>
+				<if test="playCntStr	!=null and !playCntStr.equals('')"	>	play_cnt_str		=#{playCntStr},</if>
+				<if test="downCnt		!=null "							>	down_cnt			=#{downCnt},</if>
+				<if test="hasDown		!=null "							>	has_down			=#{hasDown, typeHandler=BooleanOneZeroTypeHandler},</if>
+				<if test="loveCnt		!=null "							>	love_cnt			=#{loveCnt},</if>
+				<if test="hasLove		!=null "							>	has_love			=#{hasLove, typeHandler=BooleanOneZeroTypeHandler},</if>
+				<if test="upCnt			!=null "							>	up_cnt				=#{upCnt},</if>
+				<if test="hasUp			!=null "							>	has_up				=#{hasUp, typeHandler=BooleanOneZeroTypeHandler},</if>
+				<if test="dissCnt		!=null "							>	diss_cnt			=#{dissCnt},</if>
+				<if test="hasDiss		!=null "							>	has_diss			=#{hasDiss, typeHandler=BooleanOneZeroTypeHandler},</if>
+				<if test="movSn			!=null and !movSn.equals('')"		>	mov_sn				=#{movSn},</if>
+				<if test="movSnOri		!=null and !movSnOri.equals('')"	>	mov_sn_ori			=#{movSnOri},</if>
+				<if test="movProvider	!=null and !movProvider.equals('')"	>	mov_provider		=#{movProvider, typeHandler=BooleanOneZeroTypeHandler},</if> 
+				<if test="domain		!=null and !domain.equals('')"		>	domain				=#{domain},</if> 
+				<if test="isMosaic		!=null and !isMosaic.equals('')"	>	is_mosaic			=#{isMosaic, typeHandler=BooleanOneZeroTypeHandler},</if> 
+				<if test="movScore		!=null and !movScore.equals('')"	>	mov_score			=#{movScore},</if> 
+				<if test="giftTotal		!=null "							>	gift_total			=#{giftTotal},</if> 
+				<if test="showYn		!=null "							>	show_yn				=#{showYn, typeHandler=BooleanOneZeroTypeHandler},</if> 
+				<if test="showOrder		!=null and !showOrder.equals('')"	>	show_order			=#{showOrder},</if> 
+				mod_dt = NOW()
+			</trim>
+		WHERE mov_id=#{movId}
+    </update>
+
+    <insert id="insertMovieTagDtl" parameterType="java.util.HashMap">
+    	INSERT INTO movie_tag_dtl
+    	(
+    		id,
+		    mov_id,
+		    name,
+		    lang_cd
+    	)
+    	VALUES 
+        <foreach collection="list" item="item" separator=" , ">
+        (
+        	#{item.id}, 
+        	#{item.movId}, 
+        	#{item.name}, 
+        	#{item.langCd}
+        )
+        </foreach> 
+    </insert>
+    
+    <insert id="insertMovieCoverImage" parameterType="java.util.HashMap">
+    	INSERT INTO movie_cover_image
+    	(
+		    mov_id,
+		    cover_domain,
+		    horizontal_large,
+		    horizontal_small,
+		    vertical_large,
+		    vertical_small,
+		    lang_cd,
+		    mod_id,
+		    mod_dt
+    	)
+    	VALUES 
+        <foreach collection="list" item="item" separator=" , ">
+        (
+        	#{item.movId}, 
+        	#{item.coverDomain}, 
+        	#{item.horizontalLarge}, 
+        	#{item.horizontalSmall}, 
+        	#{item.verticalLarge}, 
+        	#{item.verticalSmall}, 
+        	#{item.langCd}, 
+        	#{item.modId}, 
+        	now()
+        )
+        </foreach> 
+    </insert>
+    
+    
+    <insert id="insertLiveGift" parameterType="ATSLiveGiftBas" useGeneratedKeys="true" keyProperty="giftIdx">
+    	INSERT INTO live_gift_bas
+    	(
+    		gift_idx,
+   		    point_name,
+   		    point_type,
+   		    point_price,
+   		    point_price_unit,
+   		    icon_domain,
+   		    icon_url,
+   		    sale_qty,
+   		    reg_id,
+   		    reg_dt
+    	)
+    	VALUES 
+        (
+        	#{giftIdx}, 
+        	#{pointName}, 
+        	#{pointType}, 
+        	#{pointPrice}, 
+        	#{pointPriceUnit}, 
+        	#{iconDomain}, 
+        	#{iconUrl}, 
+        	#{saleQty}, 
+        	#{regId}, 
+        	NOW()
+        )
+    </insert>
     
 </mapper>

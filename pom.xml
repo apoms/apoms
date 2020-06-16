@@ -248,15 +248,33 @@
 		    <scope>runtime</scope>
 		</dependency>
         
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-collections4</artifactId>
+		    <version>4.0</version>
+		</dependency>
         
     </dependencies>
 
     <build>
+    	<defaultGoal>install</defaultGoal>
+		<directory>${basedir}/target</directory>
+		<finalName>ats.ws</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+		    </plugin>
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -276,68 +294,6 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>update-source-versions</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <echo message="Set NAME = ${project.groupId}.${project.artifactId}" />
-                                <echo message="Set VERSION = ${project.version}" />
-                                
-                                <!--suppress MavenModelInspection -->
-                                <echo message="Set BUILD_ID = ${build.time}" />
-                                <echo message="Set BUILD_NUMBER = ${build.number}" />
-                                <echo message="Set SERVER-INFO = ${project.groupId}.${project.artifactId} ${project.version}" />
-
-
-                                <!--
-                                    Updating resources
-                                -->
-                                <replaceregexp byline="true" file="${basedir}/src/main/resources/application.properties">
-                                    <regexp pattern="ats.tomcat.server-info=[0-9A-Za-z\(\)\#\-\{\}$:_. ]*" />
-                                    <substitution expression="ats.tomcat.server-info=${project.groupId}.${project.artifactId} ${project.version}" />
-                                </replaceregexp>
-                                <replaceregexp byline="true" file="${basedir}/src/main/resources/banner.txt">
-                                    <regexp pattern="    :: [0-9A-Za-z\(\)\#\-\{\}$:_. ]* :: [0-9A-Za-z\(\)\#\-\{\}$:_. ]*" />
-                                    <!--suppress MavenModelInspection -->
-                                    <substitution expression="    :: ${project.artifactId} :: (v${project.version} ${build.time} #${build.number})" />
-                                </replaceregexp>
-
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>dockerfile-maven-plugin</artifactId>
-                <version>1.4.10</version>
-                <executions>
-                    <execution>
-                        <id>default</id>
-                        <goals>
-                            <goal>build</goal>
-                            <goal>push</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <dockerfile>${docker.file}</dockerfile>
-                    <repository>${docker.userRepository}</repository>
-                    <tag>${docker.tag}</tag>
-                    <buildArgs>
-                        <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-                    </buildArgs>
-                </configuration>
-            </plugin>
         </plugins>
         <pluginManagement>
         	<plugins>

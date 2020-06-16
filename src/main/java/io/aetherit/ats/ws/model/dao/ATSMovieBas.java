@@ -1,6 +1,5 @@
 package io.aetherit.ats.ws.model.dao;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -31,6 +30,7 @@ public class ATSMovieBas {
     private String movSn;
     private String movSnOri;
     private String movType;
+    private boolean movProvider;
     private String domain;
     private String P240;
     private String P360;
@@ -41,11 +41,15 @@ public class ATSMovieBas {
     private boolean isMosaic;
     private int movScore;
     private int giftTotal;
-    private BigDecimal movSaving;
     private boolean showYn;
     private int showOrder;
+    private LocalDateTime recommendDate;
+    private String recommendDesc;
+    private boolean vipFlag;
     private long gmtCreateId;
     private LocalDateTime gmtCreate;
-    private String modId;
+    private long modId;
     private LocalDateTime modDt;
 }
+
+

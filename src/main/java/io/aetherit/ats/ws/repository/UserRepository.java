@@ -1,5 +1,6 @@
 package io.aetherit.ats.ws.repository;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import io.aetherit.ats.ws.model.ATSUser;
 import io.aetherit.ats.ws.model.common.ATSFollower;
+import io.aetherit.ats.ws.model.dao.ATSUserDetail;
 import io.aetherit.ats.ws.model.dao.ATSUserRel;
 import io.aetherit.ats.ws.repository.mapper.UserMapper;
 
@@ -20,8 +22,12 @@ public class UserRepository {
         this.mapper = mapper;
     }
 
-    public ATSUser selectUser(long userid) {
-        return mapper.selectUser(userid);
+    public ATSUser selectUser(long userId) {
+        return mapper.selectUser(userId);
+    }
+    
+    public ATSUserDetail selectUserDetail(long userId) {
+    	return mapper.selectUserDetail(userId);
     }
     
     public ATSUser selectUserByEmail(String email) {
@@ -40,16 +46,20 @@ public class UserRepository {
         return mapper.insertUser(user);
     }
     
+    public int insertUserDtl(ATSUser user) {
+    	return mapper.insertUserDtl(user);
+    }
+    
     public int updateUserTypeAnchor(ATSUser user) {
     	return mapper.updateUserTypeAnchor(user);
     }
     
-    public List<ATSFollower> selectFollowerList(long userid) {
-    	return mapper.selectFollowerList(userid);
+    public List<ATSFollower> selectFollowerList(long userId) {
+    	return mapper.selectFollowerList(userId);
     }
     
-    public List<ATSFollower> selectFollowingList(long userid) {
-    	return mapper.selectFollowingList(userid);
+    public List<ATSFollower> selectFollowingList(long userId) {
+    	return mapper.selectFollowingList(userId);
     }
     
     public int insertFollowing(ATSUserRel userRel) {
@@ -58,5 +68,13 @@ public class UserRepository {
     
     public int deleteFollowing(int followIdx) {
     	return mapper.deleteFollowing(followIdx);
+    }
+    
+    public int decreaseUserPoint(long userId, BigDecimal point) {
+    	return mapper.decreaseUserPoint(userId, point);
+    }
+    
+    public int increaseUserPoint(long userId, BigDecimal point) {
+    	return mapper.increaseUserPoint(userId, point);
     }
 }

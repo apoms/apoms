@@ -125,4 +125,11 @@ public class CommonUtil {
 	    return sesClient;
 	}
 	
+	/**
+	 * 페이징여부 확인
+	 */
+	public boolean checkPaging(String paging) {
+		return paging.equals("yes");
+	}
+	
 }

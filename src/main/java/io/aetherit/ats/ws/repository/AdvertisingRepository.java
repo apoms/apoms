@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import io.aetherit.ats.ws.model.dao.ATSAdvertisiong;
+import io.aetherit.ats.ws.model.type.ATSLangCode;
 import io.aetherit.ats.ws.repository.mapper.AdvertisingMapper;
 
 @Repository
@@ -17,7 +18,7 @@ public class AdvertisingRepository {
         this.advertisingMapper = advertisingMapper;
     }
 
-    public List<ATSAdvertisiong> selectAdsList(String langCd) {
+    public List<ATSAdvertisiong> selectAdsList(ATSLangCode langCd) {
         return advertisingMapper.selectAdsList(langCd);
     }
 }

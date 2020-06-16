@@ -22,13 +22,14 @@ public class ChannelRepository {
         return channelMapper.selectDefaultChannelList();
     }
     
-    public List<ATSMovieChannelCtg> selectSubChannelList() {
-    	return channelMapper.selectSubChannelList();
+    public List<ATSMovieChannelCtg> selectChannelList() {
+    	return channelMapper.selectChannelList();
     }
     
-    public List<ATSMovieChannelCtg> selectSubChannel2List(HashMap<String,Object> map) {
-    	return channelMapper.selectSubChannel2List(map);
+    public List<ATSMovieChannelCtg> selectSubChannelList(HashMap<String,Object> map) {
+    	return channelMapper.selectSubChannelList(map);
     }
+    
 }
 
 

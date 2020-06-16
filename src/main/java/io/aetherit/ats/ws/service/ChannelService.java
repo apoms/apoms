@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import io.aetherit.ats.ws.model.common.ATSSelection;
 import io.aetherit.ats.ws.model.dao.ATSMovieBas;
 import io.aetherit.ats.ws.model.dao.ATSMovieChannelCtg;
-import io.aetherit.ats.ws.model.dao.ATSMovieCoverImage;
 import io.aetherit.ats.ws.model.movie.ATSCover;
+import io.aetherit.ats.ws.model.movie.ATSMovieChannel;
 import io.aetherit.ats.ws.model.movie.ATSMovieTag;
 import io.aetherit.ats.ws.model.movie.ATSNewMovie;
 import io.aetherit.ats.ws.model.type.ATSLangCode;
@@ -52,7 +52,11 @@ public class ChannelService {
     public List<ATSSelection> getSelectionChannelList(ATSLangCode langCd) {
     	List<ATSSelection> selectionChannelList = new ArrayList<ATSSelection>();
     	
-    	List<ATSMovieChannelCtg> subChannelList = channelRepository.selectSubChannelList();
+    	HashMap<String,Object> param = new HashMap<String,Object>();
+    	param.put("hasSelection", true);
+    	param.put("pageSize", 19);
+    	
+    	List<ATSMovieChannelCtg> subChannelList = channelRepository.selectSubChannelList(param);
     	
     	for(ATSMovieChannelCtg movieChannelCtg:subChannelList) {
     		
@@ -60,37 +64,13 @@ public class ChannelService {
     		
     		HashMap<String,Object> map = new HashMap<String,Object>();
     		map.put("moduleId", movieChannelCtg.getId());
-    		map.put("limit", 4);
+    		map.put("pageSize", 4);
     		List<ATSMovieBas> selectionMovieList = movieRepository.selectSelectionMovieList(map);
     		
     		for(ATSMovieBas movieBas:selectionMovieList) {
         		HashMap<String,String> address = new HashMap<String,String>();
         		address.put("480P", movieBas.getP480());
 
-/*        		
-        		List<ATSMovieCoverImage> coverImageList = movieRepository.selectCoverImageList(movieBas.getMovId());
-        		
-        		ATSCover allCovers = new ATSCover();
-        		ATSCover allJCovers = new ATSCover();
-        		
-        		for(ATSMovieCoverImage movieCoverImage:coverImageList) {
-        			if(movieCoverImage.getLangCd()==ATSLangCode.chn) {
-        				allCovers = ATSCover.builder()
-        							.horizontal_large(movieCoverImage.getHorizontalLarge())
-        							.horizontal_small(movieCoverImage.getHorizontalSmall())
-        							.vertical_large(movieCoverImage.getVerticalLarge())
-        							.vertical_small(movieCoverImage.getVerticalSmall())
-        						    .build();
-        			}else if(movieCoverImage.getLangCd()==ATSLangCode.jpn) {
-        				allJCovers = ATSCover.builder()
-    							.horizontal_large(movieCoverImage.getHorizontalLarge())
-    							.horizontal_small(movieCoverImage.getHorizontalSmall())
-    							.vertical_large(movieCoverImage.getVerticalLarge())
-    							.vertical_small(movieCoverImage.getVerticalSmall())
-    						    .build();
-        			}
-        		}
-*/
         		ATSCover allCovers = commonService.getCover(movieBas.getMovId(), langCd);
         		List<ATSMovieTag> relTag = commonService.getRelTagList(movieBas.getMovId(), langCd);
         		
@@ -122,11 +102,11 @@ public class ChannelService {
     		
     		ATSSelection sellectioChannel = ATSSelection.builder()
     													.clsId(null)										// TODO : 어디서 가져오는 지 확인 피료
-    													.id(Integer.parseInt(movieChannelCtg.getId()))
+    													.id(movieChannelCtg.getId())
     													.movList(movieList)
     													.name(movieChannelCtg.getName())
     													.navId(1046)									// 채널 아이디 적용								// TODO : 어디서 가져오는 지 확인 피료
-    													.selectionType(Integer.parseInt(movieChannelCtg.getShowType()))		// 노출타입
+    													.selectionType(movieChannelCtg.getShowType())		// 노출타입
     													.build();
     		
     		selectionChannelList.add(sellectioChannel);
@@ -142,10 +122,10 @@ public class ChannelService {
     public List<ATSSelection> getSelectionChannel2List(int moduleId, ATSLangCode langCd) {
     	List<ATSSelection> selectionChannelList = new ArrayList<ATSSelection>();
     	
-    	HashMap<String,Object> paramMap = new HashMap<String,Object>();
-    	paramMap.put("moduleId", moduleId);
+    	HashMap<String,Object> param = new HashMap<String,Object>();
+    	param.put("moduleId", moduleId);
     	
-    	List<ATSMovieChannelCtg> subChannelList = channelRepository.selectSubChannel2List(paramMap);
+    	List<ATSMovieChannelCtg> subChannelList = channelRepository.selectSubChannelList(param);
     	
     	for(ATSMovieChannelCtg movieChannelCtg:subChannelList) {
     		
@@ -153,11 +133,11 @@ public class ChannelService {
     		
     		HashMap<String,Object> map = new HashMap<String,Object>();
     		map.put("moduleId", movieChannelCtg.getId());
-    		map.put("limit", 4);
+    		map.put("pageSize", 6);
     		
     		/**
     		 *  기준
-			 * 1. 신작(최신 업로드 순) 4개
+			 * 1. 신작(최신 업로드 순) 6개
     		 */
     		List<ATSMovieBas> selectionMovieList = movieRepository.selectSelectionMovieList(map);    
     		
@@ -165,30 +145,6 @@ public class ChannelService {
     			HashMap<String,String> address = new HashMap<String,String>();
     			address.put("480P", movieBas.getP480());
 
-/*    			
-    			List<ATSMovieCoverImage> coverImageList = movieRepository.selectCoverImageList(movieBas.getMovId());
-    			
-    			ATSCover allCovers = new ATSCover();
-    			ATSCover allJCovers = new ATSCover();
-    			
-    			for(ATSMovieCoverImage movieCoverImage:coverImageList) {
-    				if(movieCoverImage.getLangCd()==ATSLangCode.chn) {
-    					allCovers = ATSCover.builder()
-    							.horizontal_large(movieCoverImage.getHorizontalLarge())
-    							.horizontal_small(movieCoverImage.getHorizontalSmall())
-    							.vertical_large(movieCoverImage.getVerticalLarge())
-    							.vertical_small(movieCoverImage.getVerticalSmall())
-    							.build();
-    				}else if(movieCoverImage.getLangCd()==ATSLangCode.jpn) {
-    					allJCovers = ATSCover.builder()
-    							.horizontal_large(movieCoverImage.getHorizontalLarge())
-    							.horizontal_small(movieCoverImage.getHorizontalSmall())
-    							.vertical_large(movieCoverImage.getVerticalLarge())
-    							.vertical_small(movieCoverImage.getVerticalSmall())
-    							.build();
-    				}
-    			}
-*/
     			ATSCover allCovers = commonService.getCover(movieBas.getMovId(), langCd);
         		List<ATSMovieTag> relTag = commonService.getRelTagList(movieBas.getMovId(), langCd);
         		
@@ -220,11 +176,11 @@ public class ChannelService {
     		
     		ATSSelection sellectioChannel = ATSSelection.builder()
     				.clsId(null)										// TODO : 어디서 가져오는 지 확인 피료
-    				.id(Integer.parseInt(movieChannelCtg.getId()))
+    				.id(movieChannelCtg.getId())
     				.movList(movieList)
     				.name(movieChannelCtg.getName())
     				.navId(1046)										// TODO : 어디서 가져오는 지 확인 피료
-    				.selectionType(Integer.parseInt(movieChannelCtg.getChannelType()))		// TODO : 어디서 가져오는 지 확인 피료
+    				.selectionType(movieChannelCtg.getChannelType())		// TODO : 어디서 가져오는 지 확인 피료
     				.build();
     		
     		selectionChannelList.add(sellectioChannel);
@@ -233,5 +189,45 @@ public class ChannelService {
     }
     
     
+    /**
+     * 채널 목록 조회
+     * @param userId
+     * @return
+     */
+    public List<ATSMovieChannel> getAllChannelList(ATSLangCode langCd) {
+    	
+    	List<ATSMovieChannelCtg> defaultChannelList = getDefaultChannelList(langCd);
+    	List<ATSMovieChannel> channelList = new ArrayList<ATSMovieChannel>();
+    	
+    	
+    	for(ATSMovieChannelCtg defaultChannelCtg:defaultChannelList) {
+    		
+    		HashMap<String,Object> param = new HashMap<String,Object>();
+        	param.put("moduleId", defaultChannelCtg.getId());
+        	
+    		ATSMovieChannel channelCtg = ATSMovieChannel.builder()
+    				    								.id(defaultChannelCtg.getId())
+    				    								.parentModule(defaultChannelCtg.getParentModule())
+    				    								.name(defaultChannelCtg.getName())
+    				    								.hasSelection(defaultChannelCtg.isHasSelection())
+    				    								.showType(defaultChannelCtg.getShowType())
+    				    								.showOrder(defaultChannelCtg.getShowOrder())
+    				    								.userYn(defaultChannelCtg.isUserYn())
+    				    								.subChannel(channelRepository.selectSubChannelList(param))
+    													.build();
+    		channelList.add(channelCtg);
+    	}
+        return channelList;
+    }
+    
+    
+    /**
+     * 채널 목록 조회
+     * @param userId
+     * @return
+     */
+    public List<ATSMovieChannelCtg> getSubChannelList(HashMap<String,Object> map) {
+        return channelRepository.selectSubChannelList(map);
+    }
     
 }

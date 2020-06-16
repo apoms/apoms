@@ -62,6 +62,9 @@ public class AuthenticationController {
         return new ResponseEntity<ATSUserToken>(token, HttpStatus.OK);
     }
 
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "x-auth-token", value = "", required = false, dataType = "String", paramType = "header")
+    })
     @SuppressWarnings("rawtypes")
 	@PostMapping("/signout")
     public ResponseEntity logout(HttpServletRequest httpRequest, HttpServletResponse resp) {

@@ -15,5 +15,5 @@ public class ATSLiveRoomPatch {
     private long roomId;
     private ATSLiveRoomType typeCode;
     private ATSLiveRoomStatus statusCode;
-    private String thumnailUrl;
+    private String thumbnailUrl;
 }
